@@ -80,17 +80,23 @@ const FAIL_OPEN_RESULT: RateLimitResult = {
  */
 export async function getClientIP(): Promise<string> {
   const headersList = await headers()
-  // Vercel/production: x-forwarded-for header
-  const forwardedFor = headersList.get('x-forwarded-for')
-  if (forwardedFor) {
-    // x-forwarded-for can contain multiple IPs, take the first one
-    return forwardedFor.split(',')[0].trim()
-  }
-  // Fallback for other proxies
+
+  // 🛡️ Sentinel: Avoiding x-forwarded-for due to IP spoofing risk
+  // x-forwarded-for is easily spoofed by clients unless strictly sanitized by a trusted proxy.
+  // We use x-real-ip instead, which is typically set securely by the edge/proxy.
   const realIP = headersList.get('x-real-ip')
   if (realIP) {
     return realIP
   }
+
+  // Fallback to x-forwarded-for if x-real-ip is not available
+  // We take the right-most IP to prevent spoofing
+  const forwardedFor = headersList.get('x-forwarded-for')
+  if (forwardedFor) {
+    const ips = forwardedFor.split(',')
+    return ips[ips.length - 1].trim()
+  }
+
   // Development fallback
   return '127.0.0.1'
 }
