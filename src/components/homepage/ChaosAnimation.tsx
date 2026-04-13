@@ -26,6 +26,12 @@ const REPEL_RADIUS = 80;
 const REPEL_FORCE = 0.5;
 const ICON_SIZE = 76;
 
+function secureRandom() {
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  return array[0] / (0xffffffff + 1);
+}
+
 interface IconState {
   x: number;
   y: number;
@@ -46,16 +52,16 @@ export default function ChaosAnimation() {
 
   const initState = useCallback((w: number, h: number): IconState[] => {
     return ICON_SVGS.map(() => {
-      const angle = Math.random() * Math.PI * 2;
+      const angle = secureRandom() * Math.PI * 2;
       return {
-        x: Math.random() * (w - 40),
-        y: Math.random() * (h - 40),
+        x: secureRandom() * (w - 40),
+        y: secureRandom() * (h - 40),
         vx: Math.cos(angle) * SPEED,
         vy: Math.sin(angle) * SPEED,
-        rotation: Math.random() * 360,
-        rotSpeed: (Math.random() - 0.5) * 0.8,
-        scale: 0.9 + Math.random() * 0.2,
-        scaleDir: Math.random() > 0.5 ? 1 : -1,
+        rotation: secureRandom() * 360,
+        rotSpeed: (secureRandom() - 0.5) * 0.8,
+        scale: 0.9 + secureRandom() * 0.2,
+        scaleDir: secureRandom() > 0.5 ? 1 : -1,
       };
     });
   }, []);
