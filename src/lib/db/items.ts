@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { getSystemItemTypes } from './system-items';
 
 // Maximum allowed limit for queries to prevent abuse
 const MAX_QUERY_LIMIT = 100;
@@ -175,9 +176,7 @@ const ITEM_TYPE_ORDER = ['snippet', 'prompt', 'command', 'note', 'file', 'image'
 export async function getItemTypesWithCounts(
   userId: string
 ): Promise<ItemTypeWithCount[]> {
-  const itemTypes = await prisma.itemType.findMany({
-    where: { isSystem: true },
-  });
+  const itemTypes = await getSystemItemTypes();
 
   const counts = await prisma.item.groupBy({
     by: ['itemTypeId'],
@@ -645,12 +644,8 @@ export async function createItem(
   data: CreateItemData
 ): Promise<ItemDetail | null> {
   // Look up the item type
-  const itemType = await prisma.itemType.findFirst({
-    where: {
-      name: data.typeName,
-      isSystem: true,
-    },
-  });
+  const systemTypes = await getSystemItemTypes();
+  const itemType = systemTypes.find((t) => t.name === data.typeName);
 
   if (!itemType) {
     return null;

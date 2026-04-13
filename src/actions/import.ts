@@ -3,6 +3,7 @@
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { VALID_ITEM_TYPES } from '@/lib/db/items';
+import { getSystemItemTypes } from '@/lib/db/system-items';
 import { MAX_ITEMS, MAX_COLLECTIONS } from '@/lib/usage';
 import { getAuthedSession, type ActionResult } from '@/lib/action-utils';
 
@@ -178,9 +179,7 @@ export async function importData(
   const existingCollectionNames = new Set(existingCollections.map((c) => c.name));
 
   // Fetch system item types
-  const systemTypes = await prisma.itemType.findMany({
-    where: { isSystem: true },
-  });
+  const systemTypes = await getSystemItemTypes();
   const typeMap = new Map(systemTypes.map((t) => [t.name, t.id]));
 
   let itemsImported = 0;
