@@ -72,17 +72,23 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
-  for (const item of fileItems) {
-    try {
-      const response = await fetch(item.fileUrl!);
-      if (response.ok && response.body) {
-        const arrayBuffer = await response.arrayBuffer();
-        const fileName = item.fileName || `file-${fileItems.indexOf(item)}`;
-        archive.append(Buffer.from(arrayBuffer), { name: `files/${fileName}` });
-      }
-    } catch {
-      // Skip files that can't be fetched
-    }
+  const CHUNK_SIZE = 5;
+  for (let i = 0; i < fileItems.length; i += CHUNK_SIZE) {
+    const chunk = fileItems.slice(i, i + CHUNK_SIZE);
+    await Promise.all(
+      chunk.map(async (item, idx) => {
+        try {
+          const response = await fetch(item.fileUrl!);
+          if (response.ok && response.body) {
+            const arrayBuffer = await response.arrayBuffer();
+            const fileName = item.fileName || `file-${i + idx}`;
+            archive.append(Buffer.from(arrayBuffer), { name: `files/${fileName}` });
+          }
+        } catch {
+          // Skip files that can't be fetched
+        }
+      })
+    );
   }
 
   await archive.finalize();
