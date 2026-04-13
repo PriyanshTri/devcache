@@ -69,21 +69,28 @@ interface RateLimitResult {
 }
 
 /**
- * Get the client IP address from headers
+ * Get the client IP address from headers securely
  */
 export async function getClientIP(): Promise<string> {
   const headersList = await headers()
-  // Vercel/production: x-forwarded-for header
-  const forwardedFor = headersList.get('x-forwarded-for')
-  if (forwardedFor) {
-    // x-forwarded-for can contain multiple IPs, take the first one
-    return forwardedFor.split(',')[0].trim()
-  }
-  // Fallback for other proxies
+
+  // Try to get IP using Vercel's real IP header
+  // This is set by Vercel's edge proxy and cannot be spoofed by the client
+  // see https://vercel.com/docs/headers/request-headers
   const realIP = headersList.get('x-real-ip')
   if (realIP) {
     return realIP
   }
+
+  // Note: We deliberately avoid using x-forwarded-for here if we expect the application
+  // to be deployed where the client can directly access the Node process, as it is easily
+  // spoofable. If the app is behind a reverse proxy (e.g. Nginx, ALB) that sanitizes
+  // x-forwarded-for, then relying on x-forwarded-for might be acceptable, but x-real-ip
+  // is often preferred as an explicit convention for the edge to set the actual client IP.
+  // In Vercel, x-real-ip is the safest, and x-forwarded-for is also sanitized by Vercel
+  // but could contain a list. Since we had a vulnerability from x-forwarded-for being
+  // spoofable in standalone Next.js deployments, we should not blindly trust it.
+
   // Development fallback
   return '127.0.0.1'
 }
