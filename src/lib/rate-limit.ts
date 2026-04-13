@@ -68,6 +68,13 @@ interface RateLimitResult {
   retryAfter: number // Seconds until can retry
 }
 
+const FAIL_OPEN_RESULT: RateLimitResult = {
+  success: true,
+  remaining: -1,
+  reset: 0,
+  retryAfter: 0,
+}
+
 /**
  * Get the client IP address from headers
  */
@@ -102,12 +109,7 @@ export async function checkRateLimit(
 
   // Fail open if Redis is not configured
   if (!redisClient) {
-    return {
-      success: true,
-      remaining: -1,
-      reset: 0,
-      retryAfter: 0,
-    }
+    return FAIL_OPEN_RESULT
   }
 
   const config = rateLimitConfigs[type]
@@ -134,12 +136,7 @@ export async function checkRateLimit(
   } catch (error) {
     // Fail open on errors
     console.error('Rate limit check failed:', error)
-    return {
-      success: true,
-      remaining: -1,
-      reset: 0,
-      retryAfter: 0,
-    }
+    return FAIL_OPEN_RESULT
   }
 }
 
