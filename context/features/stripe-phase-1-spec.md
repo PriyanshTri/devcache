@@ -1,4 +1,4 @@
-﻿# Stripe Integration - Phase 1: Core Infrastructure
+# Stripe Integration - Phase 1: Core Infrastructure
 
 ## Overview
 

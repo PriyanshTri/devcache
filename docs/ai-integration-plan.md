@@ -1,4 +1,4 @@
-﻿# AI Integration Plan
+# AI Integration Plan
 
 > Research findings for integrating OpenAI GPT-5 Nano into DevCache
 

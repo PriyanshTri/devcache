@@ -1,4 +1,4 @@
-﻿# DevCache Homepage Mockup Spec
+# DevCache Homepage Mockup Spec
 
 Create a marketing homepage for DevCache - a developer knowledge hub for code snippets, AI prompts, commands, notes, files, images, and links.
 

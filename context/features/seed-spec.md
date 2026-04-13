@@ -1,4 +1,4 @@
-﻿# Seed Data Specification
+# Seed Data Specification
 
 ## Overview
 
@@ -8,7 +8,7 @@ Create a seed script (`prisma/seed.ts`) to populate the database with sample dat
 
 ### User
 
-- **Email:** demo@devcache.io
+- **Email:** demo@devcache.com
 - **Name:** Demo User
 - **Password:** 12345678 (hash with bcryptjs, 12 rounds)
 - **isPro:** false

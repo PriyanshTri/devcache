@@ -1,4 +1,4 @@
-﻿import 'dotenv/config'
+import 'dotenv/config'
 import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient, ContentType } from '../src/generated/prisma/client'
@@ -66,7 +66,7 @@ async function main() {
   const hashedPassword = await bcrypt.hash('12345678', 12)
 
   const demoUser = await prisma.user.upsert({
-    where: { email: 'demo@devcache.io' },
+    where: { email: 'demo@devcache.com' },
     update: {
       name: 'Demo User',
       password: hashedPassword,
@@ -76,7 +76,7 @@ async function main() {
       emailVerified: new Date(),
     },
     create: {
-      email: 'demo@devcache.io',
+      email: 'demo@devcache.com',
       name: 'Demo User',
       password: hashedPassword,
       isPro: false,
@@ -590,7 +590,7 @@ volumes:
   console.log('\n✅ Seed completed successfully!')
   console.log('\n📊 Summary:')
   console.log(`   • 7 system item types`)
-  console.log(`   • 1 demo user (demo@devcache.io / 12345678)`)
+  console.log(`   • 1 demo user (demo@devcache.com / 12345678)`)
   console.log(`   • 3 collections`)
   console.log(`   • 17 items total`)
 }

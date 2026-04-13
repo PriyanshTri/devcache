@@ -1,4 +1,4 @@
-﻿# Item Types Documentation
+# Item Types Documentation
 
 > Generated documentation for DevCache's 7 item types
 

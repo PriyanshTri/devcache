@@ -1,4 +1,4 @@
-﻿import { Suspense } from 'react'
+import { Suspense } from 'react'
 import { VerifyEmailContent } from '@/components/auth/verify-email-content'
 
 export const metadata = {

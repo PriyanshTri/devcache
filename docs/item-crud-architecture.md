@@ -1,4 +1,4 @@
-﻿# Item CRUD Architecture
+# Item CRUD Architecture
 
 > Unified CRUD system design for all 7 item types in DevCache
 

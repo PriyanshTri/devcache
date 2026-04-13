@@ -1,4 +1,4 @@
-﻿# DevCache - Project Overview
+# DevCache - Project Overview
 
 > A unified hub for developer knowledge & resources
 

@@ -1,4 +1,4 @@
-﻿import { Code, Sparkles, Search, Terminal, FileText, FolderOpen } from "lucide-react";
+import { Code, Sparkles, Search, Terminal, FileText, FolderOpen } from "lucide-react";
 import ScrollFadeIn from "./ScrollFadeIn";
 
 const FEATURES = [

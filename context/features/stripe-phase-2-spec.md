@@ -1,4 +1,4 @@
-﻿# Stripe Integration - Phase 2: Webhooks, Feature Gating & UI
+# Stripe Integration - Phase 2: Webhooks, Feature Gating & UI
 
 ## Overview
 

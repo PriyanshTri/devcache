@@ -1,6 +1,6 @@
-﻿export const mockUser = {
+export const mockUser = {
   id: 'user_1',
-  email: 'demo@devcache.io',
+  email: 'demo@devcache.com',
   name: 'John Doe',
   isPro: false,
   createdAt: new Date('2024-01-01'),

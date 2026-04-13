@@ -1,4 +1,4 @@
-﻿# Stripe Integration Plan
+# Stripe Integration Plan
 
 > Comprehensive plan for adding Stripe subscription billing to DevCache Pro ($8/mo or $72/yr).
 

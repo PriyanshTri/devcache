@@ -1,4 +1,4 @@
-﻿<p align="center">
+<p align="center">
   <img src="https://img.icons8.com/fluency/96/code-folder.png" alt="DevCache" width="80" />
 </p>
 
@@ -24,10 +24,6 @@ Developers keep their essentials scattered across VS Code snippets, browser book
 <p align="center">
   <img src="screen.png" alt="DevCache Dashboard" width="800" />
 </p>
-
-This project is part of the [Coding With AI](https://www.codingwithaicourse.com) course by Brad Traversy. 
-
-The docs, spec files, and other resources for this project are available in the [course resources repo](https://github.com/bradtraversy/coding-with-ai-course-resources).
 
 ## Features
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Check, X } from "lucide-react";
+import { Check, X, TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ScrollFadeIn from "./ScrollFadeIn";
 
@@ -44,6 +44,20 @@ export default function PricingSection() {
           <p className="text-base text-[#8888a4] max-w-[520px] mx-auto mb-10 leading-relaxed">
             Start free. Upgrade when you need more power.
           </p>
+        </ScrollFadeIn>
+
+        {/* Dev Mode Warning Banner */}
+        <ScrollFadeIn>
+          <div className="flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 px-5 py-4 max-w-[720px] mx-auto mb-10 text-left">
+            <TriangleAlert className="h-5 w-5 shrink-0 text-amber-400 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-amber-400">Development Mode — Do Not Pay</p>
+              <p className="text-sm text-amber-400/80 mt-0.5">
+                This app is currently in development. Payments are not processed.
+                Please <strong>do not enter real card details</strong>.
+              </p>
+            </div>
+          </div>
         </ScrollFadeIn>
 
         {/* Toggle */}

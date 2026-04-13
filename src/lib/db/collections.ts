@@ -1,4 +1,4 @@
-﻿import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 // Maximum allowed limit for queries to prevent abuse
 const MAX_QUERY_LIMIT = 100;
@@ -10,7 +10,7 @@ function validateLimit(limit: number, defaultLimit: number): number {
   return Math.min(Math.max(1, limit), MAX_QUERY_LIMIT) || defaultLimit;
 }
 
-const DEMO_USER_EMAIL = 'demo@devcache.io';
+const DEMO_USER_EMAIL = 'demo@devcache.com';
 
 /**
  * Get the demo user (temporary until auth is implemented)

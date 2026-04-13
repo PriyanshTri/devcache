@@ -1,4 +1,4 @@
-﻿import { FolderOpen } from "lucide-react";
+import { FolderOpen } from "lucide-react";
 import Link from "next/link";
 
 const FOOTER_LINKS = {

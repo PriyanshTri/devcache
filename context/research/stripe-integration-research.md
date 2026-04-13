@@ -1,4 +1,4 @@
-﻿# Stripe Integration Research
+# Stripe Integration Research
 
 ## Output
 

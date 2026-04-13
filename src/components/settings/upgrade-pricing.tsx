@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, X, Loader2, Sparkles } from 'lucide-react';
+import { Check, X, Loader2, Sparkles, TriangleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { startCheckout } from '@/lib/stripe-client';
@@ -29,6 +29,18 @@ export default function UpgradePricing({ itemCount, collectionCount }: UpgradePr
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
+      {/* Dev Mode Warning Banner */}
+      <div className="flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 px-5 py-4">
+        <TriangleAlert className="h-5 w-5 shrink-0 text-amber-400 mt-0.5" />
+        <div>
+          <p className="text-sm font-semibold text-amber-400">Development Mode — Do Not Pay</p>
+          <p className="text-sm text-amber-400/80 mt-0.5">
+            This app is currently running in development. Payments are not processed and no charges will be made.
+            Please <strong>do not enter real card details</strong>.
+          </p>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2">

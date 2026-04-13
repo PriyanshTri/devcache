@@ -1,4 +1,4 @@
-﻿import 'dotenv/config'
+import 'dotenv/config'
 import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '../src/generated/prisma/client'
@@ -32,7 +32,7 @@ async function main() {
     // Fetch demo user
     console.log('\n👤 Demo User:')
     const demoUser = await prisma.user.findUnique({
-      where: { email: 'demo@devcache.io' },
+      where: { email: 'demo@devcache.com' },
       include: {
         collections: {
           include: {

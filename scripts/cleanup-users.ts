@@ -1,9 +1,9 @@
-﻿import 'dotenv/config'
+import 'dotenv/config'
 import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '../src/generated/prisma/client'
 
-const DEMO_EMAIL = 'demo@devcache.io'
+const DEMO_EMAIL = 'demo@devcache.com'
 
 async function main() {
   const connectionString = process.env.DATABASE_URL
