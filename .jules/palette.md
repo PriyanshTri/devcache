@@ -1,0 +1,3 @@
+## 2025-04-14 - Missing ARIA Labels on Navigation Components
+**Learning:** Found a recurring pattern of missing `aria-label` attributes on icon-only buttons (`<Button size="icon">`) and interactive elements across layout navigation components (`top-bar.tsx`, `sidebar.tsx`). This significantly degrades screen reader navigation for critical layout controls (mobile menus, search, sidebar expansion).
+**Action:** When reviewing layout or navigation components, verify all icon-only buttons include descriptive `aria-label`s, and ensure stateful buttons (like expand/collapse) manage `aria-expanded` attributes appropriately.
