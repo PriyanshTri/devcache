@@ -38,11 +38,22 @@ export default function ItemCard({ item }: ItemCardProps) {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openDrawer(item.id);
+    }
+  };
+
   return (
     <Card
-      className="group relative bg-card border-border hover:border-muted-foreground/50 transition-colors cursor-pointer py-0"
+      role="button"
+      tabIndex={0}
+      className="group relative bg-card border-border hover:border-muted-foreground/50 transition-colors cursor-pointer py-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       style={borderStyle}
       onClick={() => openDrawer(item.id)}
+      onKeyDown={handleKeyDown}
+      aria-label={`View ${item.title}`}
     >
       <CardContent className="flex items-start gap-3 px-4 pt-6 pb-14">
         <div
@@ -90,8 +101,9 @@ export default function ItemCard({ item }: ItemCardProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="absolute bottom-3 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute bottom-3 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
           onClick={handleCopy}
+          aria-label="Copy item content"
         >
           {copied ? (
             <Check className="h-4 w-4 text-green-500" />
