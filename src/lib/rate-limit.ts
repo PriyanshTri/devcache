@@ -57,6 +57,16 @@ export const rateLimitConfigs = {
     limiter: Ratelimit.slidingWindow(20, '1 h'),
     prefix: 'ratelimit:ai',
   },
+  // Delete account: 5 attempts per hour (keyed by IP + user ID)
+  deleteAccount: {
+    limiter: Ratelimit.slidingWindow(5, '1 h'),
+    prefix: 'ratelimit:delete-account',
+  },
+  // Change password: 5 attempts per hour (keyed by IP + user ID)
+  changePassword: {
+    limiter: Ratelimit.slidingWindow(5, '1 h'),
+    prefix: 'ratelimit:change-password',
+  },
 } as const
 
 export type RateLimitType = keyof typeof rateLimitConfigs
