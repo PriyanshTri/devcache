@@ -22,6 +22,12 @@ export async function GET(
       );
     }
 
+    // 🛡️ Sentinel: Path Traversal Protection
+    // Validate path segments to prevent directory traversal
+    if (path.some((segment) => segment === '..' || segment === '.' || segment.includes('/'))) {
+      return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
+    }
+
     // Reconstruct the full path
     const filePath = path.join('/');
 

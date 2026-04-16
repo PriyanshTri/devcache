@@ -10,3 +10,7 @@
 **Vulnerability:** The `/api/auth/delete-account` and `/api/auth/change-password` endpoints lacked rate limiting.
 **Learning:** While other auth endpoints (login, register, forgot password) had rate limits, the delete account and change password endpoints were overlooked, allowing potential brute force and abuse by authenticated users.
 **Prevention:** Ensure all state-mutating and sensitive endpoints, even authenticated ones, have appropriate rate limits configured in `rateLimitConfigs` and applied in their route handlers.
+## 2024-05-24 - [SSRF & Path Traversal Mitigations]
+**Vulnerability:** Found missing SSRF protection in file fetching during zip export (`src/app/api/export/route.ts`) and potential Path Traversal through the catch-all parameter in file downloads (`src/app/api/download/[...path]/route.ts`).
+**Learning:** Even though URLs and paths are generated internally, user input or database manipulation could result in external/malicious URLs being fetched (SSRF), or directory structures being compromised during resolving.
+**Prevention:** Always validate URLs against expected domain/prefix before fetching on the server. Always sanitize path segments from catch-all dynamic routes before concatenating or processing them.
