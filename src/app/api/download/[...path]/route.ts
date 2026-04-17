@@ -13,6 +13,12 @@ export async function GET(
     }
 
     const { path } = await params;
+
+    // Prevent path traversal vulnerabilities by checking for malicious segments
+    if (path.some(segment => segment === '..' || segment === '.' || segment.includes('/'))) {
+      return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
+    }
+
     const publicUrl = process.env.R2_PUBLIC_URL;
 
     if (!publicUrl) {
