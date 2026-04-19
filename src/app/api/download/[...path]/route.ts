@@ -13,6 +13,13 @@ export async function GET(
     }
 
     const { path } = await params;
+
+    // Security check: Prevent path traversal
+    // Note: segment can contain a single '.' for file extensions like 'secret.txt', but not '..' or exact '.'
+    if (path.some(segment => segment.includes('..') || segment === '.' || segment.includes('/'))) {
+      return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
+    }
+
     const publicUrl = process.env.R2_PUBLIC_URL;
 
     if (!publicUrl) {
