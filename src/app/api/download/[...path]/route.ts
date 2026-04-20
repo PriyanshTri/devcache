@@ -22,6 +22,17 @@ export async function GET(
       );
     }
 
+    // Security: Prevent path traversal in Next.js catch-all routes
+    // Ensure no path segments contain '..' or '/', or are exactly '.'
+    const hasPathTraversal = path.some(
+      (segment) =>
+        segment.includes('..') || segment.includes('/') || segment === '.'
+    );
+
+    if (hasPathTraversal) {
+      return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
+    }
+
     // Reconstruct the full path
     const filePath = path.join('/');
 
