@@ -10,3 +10,7 @@
 **Vulnerability:** The `/api/auth/delete-account` and `/api/auth/change-password` endpoints lacked rate limiting.
 **Learning:** While other auth endpoints (login, register, forgot password) had rate limits, the delete account and change password endpoints were overlooked, allowing potential brute force and abuse by authenticated users.
 **Prevention:** Ensure all state-mutating and sensitive endpoints, even authenticated ones, have appropriate rate limits configured in `rateLimitConfigs` and applied in their route handlers.
+## 2024-05-20 - [CRITICAL] Fix path traversal in file download
+**Vulnerability:** The `/api/download/[...path]` endpoint lacked strict validation on the `path` segments, potentially allowing an attacker to use `..` segments to traverse directories.
+**Learning:** Next.js catch-all routes (`[...path]`) receive raw path segments as an array. When reconstructing file paths from these segments, it is crucial to validate that no segment contains path traversal characters (`..`, `/`, `.`).
+**Prevention:** Explicitly validate all user-provided path segments before using them in file path construction. Use a robust validation check like `!path.some(segment => segment.includes('..') || segment.includes('/') || segment === '.')`.
