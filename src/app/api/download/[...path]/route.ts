@@ -22,6 +22,16 @@ export async function GET(
       );
     }
 
+    // 🛡️ Sentinel: Validate path against traversal attacks
+    const isValidPath = !path.some(
+      (segment) =>
+        segment.includes('..') || segment.includes('/') || segment === '.'
+    );
+
+    if (!isValidPath) {
+      return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
+    }
+
     // Reconstruct the full path
     const filePath = path.join('/');
 
