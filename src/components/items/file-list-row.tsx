@@ -56,9 +56,11 @@ function getFileIcon(fileName: string | null) {
   return File;
 }
 
+function DynamicFileIcon({ icon: Icon, className, style }: { icon: React.ElementType, className?: string, style?: React.CSSProperties }) { return <Icon className={className} style={style} />; }
+
 export default function FileListRow({ item }: FileListRowProps) {
   const { openDrawer } = useItemDrawer();
-  const FileIcon = getFileIcon(item.fileName);
+  const fileIcon = getFileIcon(item.fileName);
   const iconColor = item.itemType.color;
 
   const handleDownload = (e: React.MouseEvent) => {
@@ -85,7 +87,7 @@ export default function FileListRow({ item }: FileListRowProps) {
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
         style={{ backgroundColor: `${iconColor}20` }}
       >
-        <FileIcon className="h-5 w-5" style={{ color: iconColor }} />
+        <DynamicFileIcon icon={fileIcon} className="h-5 w-5" style={{ color: iconColor }} />
       </div>
 
       {/* File Info - Desktop */}

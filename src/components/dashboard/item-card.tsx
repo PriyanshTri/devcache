@@ -14,10 +14,12 @@ interface ItemCardProps {
   item: ItemWithType;
 }
 
+function DynamicIcon({ icon: Icon, className, style }: { icon: React.ElementType, className?: string, style?: React.CSSProperties }) { return <Icon className={className} style={style} />; }
+
 export default function ItemCard({ item }: ItemCardProps) {
   const { openDrawer } = useItemDrawer();
   const [copied, setCopied] = useState(false);
-  const IconComponent = getItemTypeIcon(item.itemType.icon);
+  const icon = getItemTypeIcon(item.itemType.icon);
   const iconColor = item.itemType.color;
   const borderStyle = { borderLeftColor: iconColor, borderLeftWidth: '3px' };
 
@@ -60,7 +62,7 @@ export default function ItemCard({ item }: ItemCardProps) {
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
           style={{ backgroundColor: `${iconColor}20` }}
         >
-          <IconComponent className="h-5 w-5" style={{ color: iconColor }} />
+          <DynamicIcon icon={icon} className="h-5 w-5" style={{ color: iconColor }} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
