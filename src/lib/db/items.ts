@@ -175,15 +175,17 @@ const ITEM_TYPE_ORDER = ['snippet', 'prompt', 'command', 'note', 'file', 'image'
 export async function getItemTypesWithCounts(
   userId: string
 ): Promise<ItemTypeWithCount[]> {
-  const itemTypes = await prisma.itemType.findMany({
-    where: { isSystem: true },
-  });
-
-  const counts = await prisma.item.groupBy({
-    by: ['itemTypeId'],
-    where: { userId },
-    _count: { id: true },
-  });
+  // ⚡ Bolt: Execute independent queries concurrently using Promise.all to prevent database waterfalls
+  const [itemTypes, counts] = await Promise.all([
+    prisma.itemType.findMany({
+      where: { isSystem: true },
+    }),
+    prisma.item.groupBy({
+      by: ['itemTypeId'],
+      where: { userId },
+      _count: { id: true },
+    }),
+  ]);
 
   const countMap = new Map(counts.map((c) => [c.itemTypeId, c._count.id]));
 
