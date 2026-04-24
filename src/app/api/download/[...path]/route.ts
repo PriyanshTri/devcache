@@ -13,6 +13,11 @@ export async function GET(
     }
 
     const { path } = await params;
+
+    // Validate path segments to prevent path traversal
+    if (path.some((segment) => segment.includes('..') || segment.includes('/') || segment === '.')) {
+      return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
+    }
     const publicUrl = process.env.R2_PUBLIC_URL;
 
     if (!publicUrl) {
