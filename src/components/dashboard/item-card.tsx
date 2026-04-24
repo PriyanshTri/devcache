@@ -104,6 +104,7 @@ export default function ItemCard({ item }: ItemCardProps) {
           className="absolute bottom-3 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
           onClick={handleCopy}
           aria-label="Copy item content"
+          title="Copy item content"
         >
           {copied ? (
             <Check className="h-4 w-4 text-green-500" />
