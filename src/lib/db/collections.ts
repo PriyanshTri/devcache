@@ -41,7 +41,8 @@ export interface CollectionWithTypes {
 }
 
 // Maximum items to sample per collection for type aggregation
-const MAX_ITEMS_FOR_TYPE_SAMPLE = 50;
+// ⚡ Bolt: Reduced sample size from 50 to 5 to prevent massive DB payloads when computing collection colors
+const MAX_ITEMS_FOR_TYPE_SAMPLE = 5;
 
 // Type for items with itemType info used in type counting
 type ItemWithType = {
