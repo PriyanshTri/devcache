@@ -209,6 +209,8 @@ export default function FileUpload({
             className="h-8 w-8 flex-shrink-0"
             onClick={handleRemoveFile}
             disabled={disabled}
+            aria-label="Remove uploaded file"
+            title="Remove file"
           >
             <X className="h-4 w-4" />
           </Button>
