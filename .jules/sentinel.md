@@ -10,3 +10,7 @@
 **Vulnerability:** The `/api/auth/delete-account` and `/api/auth/change-password` endpoints lacked rate limiting.
 **Learning:** While other auth endpoints (login, register, forgot password) had rate limits, the delete account and change password endpoints were overlooked, allowing potential brute force and abuse by authenticated users.
 **Prevention:** Ensure all state-mutating and sensitive endpoints, even authenticated ones, have appropriate rate limits configured in `rateLimitConfigs` and applied in their route handlers.
+## 2024-05-18 - [CRITICAL] Prevent Path Traversal in Catch-All Routes
+**Vulnerability:** The `/api/download/[...path]` route was vulnerable to path traversal because URL-encoded values (`%2e%2e`) are automatically decoded by Next.js in catch-all route segments. Relying solely on `.startsWith()` to verify ownership is insufficient because `userId/../otherUser/file.txt` starts with `userId/` but resolves to `otherUser/file.txt`.
+**Learning:** Next.js catch-all parameters (`[...path]`) automatically decode URL-encoded values. Thus, malicious input using URL-encoded dot-dot (`%2e%2e`) can bypass simple prefix checks after being joined.
+**Prevention:** Explicitly validate all segments of catch-all parameters by ensuring no segment contains `..` or `/`, or equals `.`, before reconstructing or checking prefixes.
