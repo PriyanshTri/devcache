@@ -150,13 +150,37 @@ export interface DashboardStats {
  * Get dashboard stats for a user
  */
 export async function getDashboardStats(userId: string): Promise<DashboardStats> {
-  const [totalItems, totalCollections, favoriteItems, favoriteCollections] =
-    await Promise.all([
-      prisma.item.count({ where: { userId } }),
-      prisma.collection.count({ where: { userId } }),
-      prisma.item.count({ where: { userId, isFavorite: true } }),
-      prisma.collection.count({ where: { userId, isFavorite: true } }),
-    ]);
+  // Optimize: Replace 4 count queries with 2 groupBy queries to halve DB roundtrips
+  const [itemStats, collectionStats] = await Promise.all([
+    prisma.item.groupBy({
+      by: ['isFavorite'],
+      where: { userId },
+      _count: { id: true },
+    }),
+    prisma.collection.groupBy({
+      by: ['isFavorite'],
+      where: { userId },
+      _count: { id: true },
+    }),
+  ]);
+
+  let totalItems = 0;
+  let favoriteItems = 0;
+  for (const stat of itemStats) {
+    totalItems += stat._count.id;
+    if (stat.isFavorite) {
+      favoriteItems += stat._count.id;
+    }
+  }
+
+  let totalCollections = 0;
+  let favoriteCollections = 0;
+  for (const stat of collectionStats) {
+    totalCollections += stat._count.id;
+    if (stat.isFavorite) {
+      favoriteCollections += stat._count.id;
+    }
+  }
 
   return {
     totalItems,
