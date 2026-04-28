@@ -125,6 +125,7 @@ export default function MarkdownEditor({
           onClick={handleAccept}
           className="flex items-center gap-1.5 text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
           title="Use optimized prompt"
+          aria-label="Use optimized prompt"
         >
           <Check className="h-3.5 w-3.5" />
           <span>Use This</span>

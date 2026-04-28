@@ -147,6 +147,7 @@ export default function FileListRow({ item }: FileListRowProps) {
           onClick={handleDownload}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md hover:bg-muted transition-colors"
           title="Download file"
+          aria-label="Download file"
         >
           <Download className="h-4 w-4 text-muted-foreground" />
         </button>
