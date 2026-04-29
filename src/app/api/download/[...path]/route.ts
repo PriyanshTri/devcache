@@ -22,6 +22,11 @@ export async function GET(
       );
     }
 
+    // Prevent path traversal
+    if (path.some(segment => segment.includes('..') || segment.includes('/') || segment === '.')) {
+      return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
+    }
+
     // Reconstruct the full path
     const filePath = path.join('/');
 
