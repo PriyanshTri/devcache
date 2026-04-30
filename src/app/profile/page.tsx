@@ -21,37 +21,27 @@ export default async function ProfilePage() {
     redirect('/sign-in');
   }
 
-  // Get item counts by type
-  const itemCounts = await prisma.item.groupBy({
-    by: ['itemTypeId'],
-    where: { userId: user.id },
-    _count: { id: true },
-  });
-
-  // Get item types to map IDs to names
-  const itemTypes = await prisma.itemType.findMany({
-    where: { isSystem: true },
-  });
-
-  const typeCountMap = new Map(itemCounts.map((c) => [c.itemTypeId, c._count.id]));
-  const itemTypeBreakdown = itemTypes.map((type) => ({
-    name: type.name,
-    icon: type.icon,
-    color: type.color,
-    count: typeCountMap.get(type.id) || 0,
-  }));
-
-  // Get totals
-  const [totalItems, totalCollections] = await Promise.all([
-    prisma.item.count({ where: { userId: user.id } }),
-    prisma.collection.count({ where: { userId: user.id } }),
-  ]);
-
   // Get sidebar data for layout
   const [itemTypesWithCounts, sidebarCollections] = await Promise.all([
     getItemTypesWithCounts(user.id),
     getSidebarCollections(user.id),
   ]);
+
+  // Performance Optimization: Reused itemTypesWithCounts to build itemTypeBreakdown
+  // instead of running duplicate `prisma.item.groupBy` and `prisma.itemType.findMany` queries.
+  const itemTypeBreakdown = itemTypesWithCounts.map((type) => ({
+    name: type.name,
+    icon: type.icon,
+    color: type.color,
+    count: type.count,
+  }));
+
+  // Performance Optimization: Calculated total items in memory by summing the already fetched
+  // itemTypesWithCounts, removing the need for a separate `prisma.item.count` query.
+  const totalItems = itemTypesWithCounts.reduce((sum, type) => sum + type.count, 0);
+
+  // Get remaining totals
+  const totalCollections = await prisma.collection.count({ where: { userId: user.id } });
 
   return (
     <DashboardLayout
