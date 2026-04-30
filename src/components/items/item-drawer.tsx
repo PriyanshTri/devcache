@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { formatFileSize, extractR2Key } from "@/lib/r2";
 import { formatLongDate } from "@/lib/utils/date";
+import { isValidHttpUrl } from "@/lib/utils/url";
 import {
   Select,
   SelectContent,
@@ -280,7 +281,7 @@ export default function ItemDrawer() {
     if (filePath) {
       // Use download proxy to avoid CORS
       window.open(`/api/download/${filePath}`, "_blank");
-    } else {
+    } else if (isValidHttpUrl(item.fileUrl)) {
       // Fallback: open the file URL directly
       window.open(item.fileUrl, "_blank");
     }
@@ -649,7 +650,7 @@ export default function ItemDrawer() {
                         URL
                       </p>
                       <a
-                        href={item.url}
+                        href={isValidHttpUrl(item.url) ? item.url : "#"}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-base text-blue-400 hover:underline break-all"
