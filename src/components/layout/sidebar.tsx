@@ -225,11 +225,11 @@ export default function Sidebar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             {isCollapsed ? (
-              <button className="flex w-full justify-center" aria-label="User menu">
+              <button className="flex w-full justify-center" aria-label={`User menu for ${user?.name || "Guest"}`}>
                 <UserAvatar name={user?.name} image={user?.image} />
               </button>
             ) : (
-              <button className="flex w-full items-center gap-3 rounded-md p-1 hover:bg-accent">
+              <button className="flex w-full items-center gap-3 rounded-md p-1 hover:bg-accent" aria-label={`User menu for ${user?.name || "Guest"}`}>
                 <UserAvatar name={user?.name} image={user?.image} />
                 <div className="flex-1 overflow-hidden text-left">
                   <p className="truncate text-sm font-medium">

@@ -20,6 +20,7 @@ export default function FavoriteItemRow({ item }: FavoriteItemRowProps) {
       type="button"
       onClick={() => openDrawer(item.id)}
       className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-muted/50 transition-colors rounded-sm group"
+      aria-label={`View ${item.title}`}
     >
       <IconComponent
         className="h-4 w-4 shrink-0"
