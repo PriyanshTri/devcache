@@ -62,7 +62,7 @@ export default function MobileSidebar({
           <div className="border-t border-border p-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex w-full items-center gap-3 rounded-md p-1 hover:bg-accent">
+                <button className="flex w-full items-center gap-3 rounded-md p-1 hover:bg-accent" aria-label={`User menu for ${user?.name || "Guest"}`}>
                   <UserAvatar name={user?.name} image={user?.image} />
                   <div className="flex-1 overflow-hidden text-left">
                     <p className="truncate text-sm font-medium">
