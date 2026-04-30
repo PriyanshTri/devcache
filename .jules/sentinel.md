@@ -14,3 +14,7 @@
 **Vulnerability:** Found missing SSRF protection in file fetching during zip export (`src/app/api/export/route.ts`) and potential Path Traversal through the catch-all parameter in file downloads (`src/app/api/download/[...path]/route.ts`).
 **Learning:** Even though URLs and paths are generated internally, user input or database manipulation could result in external/malicious URLs being fetched (SSRF), or directory structures being compromised during resolving.
 **Prevention:** Always validate URLs against expected domain/prefix before fetching on the server. Always sanitize path segments from catch-all dynamic routes before concatenating or processing them.
+## 2024-05-24 - [HIGH] Fix XSS and Open Redirect vector via unvalidated URLs
+**Vulnerability:** The application used `window.open` and rendered `href` attributes directly with unvalidated URLs from items (e.g., `item.fileUrl` and `item.url`). This allows arbitrary JavaScript execution via `javascript:` protocol payloads or arbitrary protocol redirects.
+**Learning:** Navigating or opening URLs directly from user-influenced data (like database items) without protocol validation presents XSS and Open Redirect vectors.
+**Prevention:** Always validate external URLs using a utility like `isValidHttpUrl` to ensure they start with `http:` or `https:` before passing them to `window.open` or `href` attributes.
