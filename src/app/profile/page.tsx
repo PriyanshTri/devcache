@@ -42,10 +42,10 @@ export default async function ProfilePage() {
   }));
 
   // Get totals
-  const [totalItems, totalCollections] = await Promise.all([
-    prisma.item.count({ where: { userId: user.id } }),
-    prisma.collection.count({ where: { userId: user.id } }),
-  ]);
+  // Performance Optimization: Calculate totalItems in-memory from the already executed
+  // itemCounts groupBy query, saving one redundant database roundtrip.
+  const totalItems = itemCounts.reduce((acc, curr) => acc + curr._count.id, 0);
+  const totalCollections = await prisma.collection.count({ where: { userId: user.id } });
 
   // Get sidebar data for layout
   const [itemTypesWithCounts, sidebarCollections] = await Promise.all([
