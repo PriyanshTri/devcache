@@ -5,3 +5,7 @@
 ## 2023-10-27 - Reduce Database Query Latency via Grouping
 **Learning:** In Prisma and SQL, executing four separate `.count()` aggregations results in four round trips to the database, which increases query latency—especially when computing totals vs conditionally filtered subsets (like `isFavorite=true`) for the same table.
 **Action:** Always prefer computing combined aggregates in a single scan. Replacing individual `.count()` queries with a single `.groupBy()` query allows resolving total count and subset counts in one roundtrip.
+
+## 2025-05-01 - Avoid Redundant Database Aggregations
+**Learning:** When retrieving grouped data with `.groupBy()` in Prisma (such as counts for various item types), calculating the total sum in-memory using `.reduce()` is significantly more efficient than running an additional `.count()` query on the entire table.
+**Action:** Before writing a `.count()` query, check if a `.groupBy()` on the same data is already being fetched. If so, derive the aggregate locally to save a database roundtrip.
