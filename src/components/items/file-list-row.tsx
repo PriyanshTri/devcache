@@ -3,6 +3,7 @@
 import { Download, Star, Pin, File, FileText, FileImage, FileVideo, FileAudio, FileArchive, FileCode, FileSpreadsheet } from 'lucide-react';
 import { useItemDrawer } from '@/components/items/item-drawer-provider';
 import { formatRelativeDate } from '@/lib/utils/date';
+import { isValidHttpUrl } from '@/lib/utils/url';
 import { formatFileSize, extractR2Key } from '@/lib/r2';
 import type { ItemWithType } from '@/lib/db/items';
 
@@ -71,7 +72,11 @@ export default function FileListRow({ item }: FileListRowProps) {
       window.open(`/api/download/${filePath}`, '_blank');
     } else {
       // Fallback: open the file URL directly
-      window.open(item.fileUrl, '_blank');
+      if (isValidHttpUrl(item.fileUrl)) {
+        window.open(item.fileUrl, '_blank');
+      } else {
+        console.error('Invalid URL:', item.fileUrl);
+      }
     }
   };
 
