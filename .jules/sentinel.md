@@ -14,3 +14,7 @@
 **Vulnerability:** Found missing SSRF protection in file fetching during zip export (`src/app/api/export/route.ts`) and potential Path Traversal through the catch-all parameter in file downloads (`src/app/api/download/[...path]/route.ts`).
 **Learning:** Even though URLs and paths are generated internally, user input or database manipulation could result in external/malicious URLs being fetched (SSRF), or directory structures being compromised during resolving.
 **Prevention:** Always validate URLs against expected domain/prefix before fetching on the server. Always sanitize path segments from catch-all dynamic routes before concatenating or processing them.
+## 2024-05-24 - [HIGH] Fix Authentication Rate Limiting Bypass
+**Vulnerability:** The application relied on a client-side API call (`/api/auth/check-login-limit`) to enforce rate limiting before calling the actual NextAuth login endpoint.
+**Learning:** Client-side security checks are easily bypassable. Attackers can ignore the client UI and directly send brute-force POST requests to the NextAuth endpoint (`/api/auth/callback/credentials`), entirely bypassing the rate limit.
+**Prevention:** Always enforce rate limits server-side directly within the sensitive action. For NextAuth, this means checking limits within the `authorize` callback.
