@@ -3,7 +3,13 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import GitHub from 'next-auth/providers/github'
 import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
+import { CredentialsSignin } from 'next-auth'
 import { prisma } from '@/lib/prisma'
+import { checkRateLimit } from '@/lib/rate-limit'
+
+class RateLimitError extends CredentialsSignin {
+  code = 'RateLimitExceeded'
+}
 
 /**
  * Full NextAuth configuration with Prisma adapter.
@@ -32,6 +38,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const email = credentials.email as string
         const password = credentials.password as string
+
+        // 🛡️ Sentinel: Server-Side Rate Limiting
+        // Enforce rate limiting directly in the authorize callback to prevent
+        // brute force bypasses that rely purely on client-side or separate endpoint checks.
+        const rateLimit = await checkRateLimit('login', email)
+        if (!rateLimit.success) {
+          throw new RateLimitError()
+        }
 
         const user = await prisma.user.findUnique({
           where: { email },
