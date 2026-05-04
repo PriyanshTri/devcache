@@ -13,10 +13,21 @@ interface ImageThumbnailCardProps {
 export default function ImageThumbnailCard({ item }: ImageThumbnailCardProps) {
   const { openDrawer } = useItemDrawer();
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openDrawer(item.id);
+    }
+  };
+
   return (
     <Card
-      className="group overflow-hidden bg-card border-border hover:border-muted-foreground/50 transition-colors cursor-pointer"
+      role="button"
+      tabIndex={0}
+      aria-label={`View image: ${item.title}`}
+      className="group overflow-hidden bg-card border-border hover:border-muted-foreground/50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       onClick={() => openDrawer(item.id)}
+      onKeyDown={handleKeyDown}
     >
       {/* Image Container with 16:9 aspect ratio */}
       <div className="aspect-video overflow-hidden bg-muted relative">
