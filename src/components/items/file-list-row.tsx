@@ -75,10 +75,21 @@ export default function FileListRow({ item }: FileListRowProps) {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openDrawer(item.id);
+    }
+  };
+
   return (
     <div
-      className="flex items-center gap-4 p-4 bg-card border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+      role="button"
+      tabIndex={0}
+      className="flex items-center gap-4 p-4 bg-card border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       onClick={() => openDrawer(item.id)}
+      onKeyDown={handleKeyDown}
+      aria-label={`View ${item.title}`}
     >
       {/* File Icon */}
       <div
