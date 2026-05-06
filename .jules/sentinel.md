@@ -14,3 +14,7 @@
 **Vulnerability:** Found missing SSRF protection in file fetching during zip export (`src/app/api/export/route.ts`) and potential Path Traversal through the catch-all parameter in file downloads (`src/app/api/download/[...path]/route.ts`).
 **Learning:** Even though URLs and paths are generated internally, user input or database manipulation could result in external/malicious URLs being fetched (SSRF), or directory structures being compromised during resolving.
 **Prevention:** Always validate URLs against expected domain/prefix before fetching on the server. Always sanitize path segments from catch-all dynamic routes before concatenating or processing them.
+## 2024-05-06 - XSS vulnerability via unvalidated URLs
+**Vulnerability:** External URLs were directly rendered in `<a>` tags and `window.open` calls without protocol validation, allowing arbitrary JS execution via `javascript:` payloads.
+**Learning:** React escapes HTML content, but does not sanitize URL attributes natively.
+**Prevention:** Always validate URLs using `isValidHttpUrl` to ensure they strictly use `http:` or `https:` protocols before rendering them as external links.

@@ -5,6 +5,7 @@ import { useItemDrawer } from '@/components/items/item-drawer-provider';
 import { formatRelativeDate } from '@/lib/utils/date';
 import { formatFileSize, extractR2Key } from '@/lib/r2';
 import type { ItemWithType } from '@/lib/db/items';
+import { isValidHttpUrl } from '@/lib/utils/url';
 
 interface FileListRowProps {
   item: ItemWithType;
@@ -69,7 +70,7 @@ export default function FileListRow({ item }: FileListRowProps) {
     if (filePath) {
       // Use download proxy to avoid CORS
       window.open(`/api/download/${filePath}`, '_blank');
-    } else {
+    } else if (isValidHttpUrl(item.fileUrl)) {
       // Fallback: open the file URL directly
       window.open(item.fileUrl, '_blank');
     }
