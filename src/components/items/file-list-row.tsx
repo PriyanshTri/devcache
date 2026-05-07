@@ -4,6 +4,7 @@ import { Download, Star, Pin, File, FileText, FileImage, FileVideo, FileAudio, F
 import { useItemDrawer } from '@/components/items/item-drawer-provider';
 import { formatRelativeDate } from '@/lib/utils/date';
 import { formatFileSize, extractR2Key } from '@/lib/r2';
+import { isValidHttpUrl } from '@/lib/utils/url';
 import type { ItemWithType } from '@/lib/db/items';
 
 interface FileListRowProps {
@@ -69,8 +70,9 @@ export default function FileListRow({ item }: FileListRowProps) {
     if (filePath) {
       // Use download proxy to avoid CORS
       window.open(`/api/download/${filePath}`, '_blank');
-    } else {
+    } else if (isValidHttpUrl(item.fileUrl)) {
       // Fallback: open the file URL directly
+      // 🛡️ Sentinel: Validate URL to prevent XSS/Open Redirect via javascript: scheme
       window.open(item.fileUrl, '_blank');
     }
   };

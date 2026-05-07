@@ -47,6 +47,7 @@ import { useClipboard } from "@/hooks/use-clipboard";
 import { toast } from "sonner";
 import { updateItem, deleteItem, toggleItemFavorite, toggleItemPin } from "@/actions/items";
 import { getUserCollections } from "@/actions/collections";
+import { isValidHttpUrl } from "@/lib/utils/url";
 import DeleteItemDialog from "./delete-item-dialog";
 import CodeEditor from "./code-editor";
 import MarkdownEditor from "./markdown-editor";
@@ -280,8 +281,9 @@ export default function ItemDrawer() {
     if (filePath) {
       // Use download proxy to avoid CORS
       window.open(`/api/download/${filePath}`, "_blank");
-    } else {
+    } else if (isValidHttpUrl(item.fileUrl)) {
       // Fallback: open the file URL directly
+      // 🛡️ Sentinel: Validate URL to prevent XSS/Open Redirect via javascript: scheme
       window.open(item.fileUrl, "_blank");
     }
   };
@@ -649,7 +651,7 @@ export default function ItemDrawer() {
                         URL
                       </p>
                       <a
-                        href={item.url}
+                        href={isValidHttpUrl(item.url) ? item.url : "#"}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-base text-blue-400 hover:underline break-all"
