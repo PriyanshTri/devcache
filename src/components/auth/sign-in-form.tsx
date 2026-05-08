@@ -77,6 +77,9 @@ export function SignInForm() {
       if (result.code === "credentials" && result.error.includes("EmailNotVerified")) {
         setFormError("Please verify your email before signing in.");
         setNeedsVerification(true);
+      } else if (result.code === "credentials" && result.error.includes("RateLimitExceeded")) {
+        setFormError("Too many login attempts. Please try again later.");
+        setNeedsVerification(false);
       } else {
         setFormError("Invalid email or password");
         setNeedsVerification(false);
