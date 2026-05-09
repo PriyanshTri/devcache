@@ -35,7 +35,7 @@ export default function SearchProvider({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchData, setSearchData] = useState<SearchData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchSearchData = useCallback(async () => {
     setIsLoading(true);
@@ -51,30 +51,25 @@ export default function SearchProvider({
     }
   }, []);
 
+  // Fetch search data on mount
+  useEffect(() => {
+    fetchSearchData();
+  }, [fetchSearchData]);
+
   // Listen for Cmd+K / Ctrl+K
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        setIsOpen((prev) => {
-          if (!prev && !searchData) {
-            fetchSearchData();
-          }
-          return !prev;
-        });
+        setIsOpen((prev) => !prev);
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [searchData, fetchSearchData]);
+  }, []);
 
-  const openSearch = useCallback(() => {
-    setIsOpen(true);
-    if (!searchData) {
-      fetchSearchData();
-    }
-  }, [searchData, fetchSearchData]);
+  const openSearch = useCallback(() => setIsOpen(true), []);
   const closeSearch = useCallback(() => setIsOpen(false), []);
 
   return (
