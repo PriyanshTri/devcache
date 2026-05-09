@@ -57,6 +57,16 @@ export const rateLimitConfigs = {
     limiter: Ratelimit.slidingWindow(20, '1 h'),
     prefix: 'ratelimit:ai',
   },
+  // Delete account: 5 attempts per hour (keyed by IP + user ID)
+  deleteAccount: {
+    limiter: Ratelimit.slidingWindow(5, '1 h'),
+    prefix: 'ratelimit:delete-account',
+  },
+  // Change password: 5 attempts per hour (keyed by IP + user ID)
+  changePassword: {
+    limiter: Ratelimit.slidingWindow(5, '1 h'),
+    prefix: 'ratelimit:change-password',
+  },
 } as const
 
 export type RateLimitType = keyof typeof rateLimitConfigs
@@ -68,22 +78,35 @@ interface RateLimitResult {
   retryAfter: number // Seconds until can retry
 }
 
+const FAIL_OPEN_RESULT: RateLimitResult = {
+  success: true,
+  remaining: -1,
+  reset: 0,
+  retryAfter: 0,
+}
+
 /**
  * Get the client IP address from headers
  */
 export async function getClientIP(): Promise<string> {
   const headersList = await headers()
-  // Vercel/production: x-forwarded-for header
-  const forwardedFor = headersList.get('x-forwarded-for')
-  if (forwardedFor) {
-    // x-forwarded-for can contain multiple IPs, take the first one
-    return forwardedFor.split(',')[0].trim()
-  }
-  // Fallback for other proxies
+
+  // 🛡️ Sentinel: Avoiding x-forwarded-for due to IP spoofing risk
+  // x-forwarded-for is easily spoofed by clients unless strictly sanitized by a trusted proxy.
+  // We use x-real-ip instead, which is typically set securely by the edge/proxy.
   const realIP = headersList.get('x-real-ip')
   if (realIP) {
     return realIP
   }
+
+  // Fallback to x-forwarded-for if x-real-ip is not available
+  // We take the right-most IP to prevent spoofing
+  const forwardedFor = headersList.get('x-forwarded-for')
+  if (forwardedFor) {
+    const ips = forwardedFor.split(',')
+    return ips[ips.length - 1].trim()
+  }
+
   // Development fallback
   return '127.0.0.1'
 }
@@ -102,12 +125,7 @@ export async function checkRateLimit(
 
   // Fail open if Redis is not configured
   if (!redisClient) {
-    return {
-      success: true,
-      remaining: -1,
-      reset: 0,
-      retryAfter: 0,
-    }
+    return FAIL_OPEN_RESULT
   }
 
   const config = rateLimitConfigs[type]
@@ -134,12 +152,7 @@ export async function checkRateLimit(
   } catch (error) {
     // Fail open on errors
     console.error('Rate limit check failed:', error)
-    return {
-      success: true,
-      remaining: -1,
-      reset: 0,
-      retryAfter: 0,
-    }
+    return FAIL_OPEN_RESULT
   }
 }
 

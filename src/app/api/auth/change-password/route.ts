@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 export async function POST(request: Request) {
   try {
@@ -12,6 +13,12 @@ export async function POST(request: Request) {
         { error: 'Unauthorized' },
         { status: 401 }
       )
+    }
+
+    // Check rate limit
+    const rateLimit = await checkRateLimit('changePassword', session.user.id)
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit.retryAfter)
     }
 
     const body = await request.json()

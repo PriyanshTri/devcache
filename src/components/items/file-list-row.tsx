@@ -3,7 +3,7 @@
 import { Download, Star, Pin, File, FileText, FileImage, FileVideo, FileAudio, FileArchive, FileCode, FileSpreadsheet } from 'lucide-react';
 import { useItemDrawer } from '@/components/items/item-drawer-provider';
 import { formatRelativeDate } from '@/lib/utils/date';
-import { formatFileSize } from '@/lib/r2';
+import { formatFileSize, extractR2Key } from '@/lib/r2';
 import type { ItemWithType } from '@/lib/db/items';
 
 interface FileListRowProps {
@@ -65,14 +65,11 @@ export default function FileListRow({ item }: FileListRowProps) {
     e.stopPropagation();
     if (!item.fileUrl) return;
 
-    // Extract the path from the R2 URL (format: https://xxx.r2.dev/{userId}/{timestamp}-{filename})
-    try {
-      const url = new URL(item.fileUrl);
-      // Remove leading slash from pathname
-      const filePath = url.pathname.slice(1);
+    const filePath = extractR2Key(item.fileUrl);
+    if (filePath) {
       // Use download proxy to avoid CORS
       window.open(`/api/download/${filePath}`, '_blank');
-    } catch {
+    } else {
       // Fallback: open the file URL directly
       window.open(item.fileUrl, '_blank');
     }
@@ -150,6 +147,7 @@ export default function FileListRow({ item }: FileListRowProps) {
           onClick={handleDownload}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md hover:bg-muted transition-colors"
           title="Download file"
+          aria-label="Download file"
         >
           <Download className="h-4 w-4 text-muted-foreground" />
         </button>
