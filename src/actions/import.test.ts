@@ -238,7 +238,6 @@ describe('importData server action', () => {
         collection: {
           findMany: vi.fn().mockResolvedValue([]),
           create: vi.fn().mockResolvedValue({ id: 'new-coll', name: 'Test' }),
-          createManyAndReturn: vi.fn().mockResolvedValue([{ id: 'new-coll', name: 'Test' }]),
         },
         item: {
           create: vi.fn().mockResolvedValue({ id: 'new-item' }),
@@ -283,7 +282,6 @@ describe('importData server action', () => {
         collection: {
           findMany: vi.fn().mockResolvedValue([]),
           create: vi.fn().mockResolvedValue({ id: 'new-coll', name: 'Test' }),
-          createManyAndReturn: vi.fn().mockResolvedValue([{ id: 'new-coll', name: 'Test' }]),
         },
         item: {
           create: vi.fn().mockResolvedValue({ id: 'new-item' }),
@@ -321,7 +319,6 @@ describe('importData server action', () => {
         collection: {
           findMany: vi.fn().mockResolvedValue([]),
           create: vi.fn().mockResolvedValue({ id: 'new-coll', name: 'Test' }),
-          createManyAndReturn: vi.fn().mockResolvedValue([{ id: 'new-coll', name: 'Test' }]),
         },
         item: {
           create: vi.fn().mockResolvedValue({ id: 'new-item' }),
@@ -360,7 +357,6 @@ describe('importData server action', () => {
         collection: {
           findMany: vi.fn().mockResolvedValue([]),
           create: vi.fn().mockResolvedValue({ id: 'new-coll', name: 'Test' }),
-          createManyAndReturn: vi.fn().mockResolvedValue([{ id: 'new-coll', name: 'Test' }]),
         },
         item: {
           create: vi.fn().mockResolvedValue({ id: 'new-item' }),

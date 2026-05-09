@@ -67,23 +67,12 @@ export default function CollectionCard({ collection }: CollectionCardProps) {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      handleCardClick();
-    }
-  };
-
   return (
     <>
       <Card
-        role="button"
-        tabIndex={0}
-        className="group relative bg-card border-border hover:border-muted-foreground/50 transition-colors cursor-pointer py-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="group relative bg-card border-border hover:border-muted-foreground/50 transition-colors cursor-pointer py-0"
         style={borderStyle}
         onClick={handleCardClick}
-        onKeyDown={handleKeyDown}
-        aria-label={`View collection ${collection.name}`}
       >
         <CardContent className="px-4 py-3">
           <div className="flex items-start justify-between">
@@ -98,9 +87,7 @@ export default function CollectionCard({ collection }: CollectionCardProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
-                  aria-label="Collection options"
-                  title="Collection options"
+                  className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>

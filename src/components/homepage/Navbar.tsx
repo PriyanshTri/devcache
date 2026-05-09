@@ -30,12 +30,12 @@ export default function Navbar() {
         </Link>
 
         <div className="hidden md:flex gap-8">
-          <Link href="/#features" className="text-sm font-medium text-[#8888a4] hover:text-[#e4e4ef] transition-colors">
+          <a href="/#features" className="text-sm font-medium text-[#8888a4] hover:text-[#e4e4ef] transition-colors">
             Features
-          </Link>
-          <Link href="/#pricing" className="text-sm font-medium text-[#8888a4] hover:text-[#e4e4ef] transition-colors">
+          </a>
+          <a href="/#pricing" className="text-sm font-medium text-[#8888a4] hover:text-[#e4e4ef] transition-colors">
             Pricing
-          </Link>
+          </a>
         </div>
 
         <div className="hidden md:flex items-center gap-3">
@@ -58,20 +58,20 @@ export default function Navbar() {
 
       {mobileOpen && (
         <div className="md:hidden flex flex-col gap-2 px-6 pb-6 border-t border-[#1e1e2e]">
-          <Link
+          <a
             href="/#features"
             className="text-[#8888a4] text-sm py-2"
             onClick={() => setMobileOpen(false)}
           >
             Features
-          </Link>
-          <Link
+          </a>
+          <a
             href="/#pricing"
             className="text-[#8888a4] text-sm py-2"
             onClick={() => setMobileOpen(false)}
           >
             Pricing
-          </Link>
+          </a>
           <Button variant="outline" asChild className="border-[#1e1e2e] text-[#8888a4] hover:text-[#e4e4ef] bg-transparent mt-1 justify-center">
             <Link href="/sign-in" onClick={() => setMobileOpen(false)}>Sign In</Link>
           </Button>
