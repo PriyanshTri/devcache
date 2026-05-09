@@ -170,6 +170,13 @@ export default function FileUpload({
     }
   }, [disabled, isUploading]);
 
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleClick();
+    }
+  }, [handleClick]);
+
   // Show uploaded file preview
   if (uploadedFile) {
     const isImage = itemType === "image";
@@ -209,6 +216,8 @@ export default function FileUpload({
             className="h-8 w-8 flex-shrink-0"
             onClick={handleRemoveFile}
             disabled={disabled}
+            aria-label="Remove uploaded file"
+            title="Remove uploaded file"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -220,8 +229,10 @@ export default function FileUpload({
   // Show upload area
   return (
     <div
+      role="button"
+      tabIndex={disabled || isUploading ? -1 : 0}
       className={cn(
-        "relative cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors",
+        "relative cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         isDragging
           ? "border-primary bg-primary/5"
           : "border-border hover:border-muted-foreground/50",
@@ -231,6 +242,9 @@ export default function FileUpload({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      aria-disabled={disabled || isUploading}
+      aria-label={itemType === "image" ? "Upload an image" : "Upload a file"}
     >
       <input
         ref={fileInputRef}
