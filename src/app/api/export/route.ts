@@ -72,8 +72,23 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+
   for (const item of fileItems) {
     try {
+      // Security: Prevent SSRF by ensuring the URL points to our R2 bucket
+      if (!publicUrl) {
+        console.error('Missing R2_PUBLIC_URL, failing securely');
+        continue;
+      }
+
+      const safePrefix = publicUrl.endsWith('/') ? publicUrl : `${publicUrl}/`;
+
+      if (!item.fileUrl!.startsWith(safePrefix)) {
+        console.error(`Blocked attempt to fetch invalid URL: ${item.fileUrl}`);
+        continue;
+      }
+
       const response = await fetch(item.fileUrl!);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
