@@ -54,6 +54,7 @@ export default function CollectionActions({ collection }: CollectionActionsProps
           size="icon"
           onClick={() => setEditOpen(true)}
           title="Edit collection"
+          aria-label="Edit collection"
         >
           <Pencil className="h-4 w-4" />
         </Button>
@@ -62,6 +63,7 @@ export default function CollectionActions({ collection }: CollectionActionsProps
           size="icon"
           onClick={handleToggleFavorite}
           title={collection.isFavorite ? "Remove from favorites" : "Add to favorites"}
+          aria-label={collection.isFavorite ? "Remove from favorites" : "Add to favorites"}
         >
           <Star
             className={`h-4 w-4 ${
@@ -74,6 +76,7 @@ export default function CollectionActions({ collection }: CollectionActionsProps
           size="icon"
           onClick={() => setDeleteOpen(true)}
           title="Delete collection"
+          aria-label="Delete collection"
         >
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>

@@ -111,6 +111,7 @@ export default function SuggestTagsButton({
                 onClick={() => handleAccept(tag)}
                 className="rounded-sm p-0.5 hover:bg-green-500/20 text-green-400"
                 title="Accept tag"
+                aria-label={`Accept tag ${tag}`}
               >
                 <Check className="h-3 w-3" />
               </button>
@@ -119,6 +120,7 @@ export default function SuggestTagsButton({
                 onClick={() => handleReject(tag)}
                 className="rounded-sm p-0.5 hover:bg-red-500/20 text-red-400"
                 title="Reject tag"
+                aria-label={`Reject tag ${tag}`}
               >
                 <X className="h-3 w-3" />
               </button>
