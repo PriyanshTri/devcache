@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { getSystemItemTypes } from '@/lib/db/system-items';
+import { getSystemItemTypes } from './system-items';
 
 // Maximum allowed limit for queries to prevent abuse
 const MAX_QUERY_LIMIT = 100;
