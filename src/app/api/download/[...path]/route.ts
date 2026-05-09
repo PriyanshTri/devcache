@@ -15,7 +15,7 @@ export async function GET(
     const { path } = await params;
 
     // Prevent path traversal vulnerabilities by checking for malicious segments
-    if (path.some(segment => segment === '..' || segment === '.' || segment.includes('/'))) {
+    if (path.some(segment => segment === '..' || segment === '.' || segment.includes('/') || segment.includes('\\'))) {
       return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
     }
 
