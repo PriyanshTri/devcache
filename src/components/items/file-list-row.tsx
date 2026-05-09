@@ -3,7 +3,7 @@
 import { Download, Star, Pin, File, FileText, FileImage, FileVideo, FileAudio, FileArchive, FileCode, FileSpreadsheet } from 'lucide-react';
 import { useItemDrawer } from '@/components/items/item-drawer-provider';
 import { formatRelativeDate } from '@/lib/utils/date';
-import { formatFileSize, extractR2Key } from '@/lib/r2';
+import { formatFileSize } from '@/lib/r2';
 import type { ItemWithType } from '@/lib/db/items';
 
 interface FileListRowProps {
@@ -65,11 +65,14 @@ export default function FileListRow({ item }: FileListRowProps) {
     e.stopPropagation();
     if (!item.fileUrl) return;
 
-    const filePath = extractR2Key(item.fileUrl);
-    if (filePath) {
+    // Extract the path from the R2 URL (format: https://xxx.r2.dev/{userId}/{timestamp}-{filename})
+    try {
+      const url = new URL(item.fileUrl);
+      // Remove leading slash from pathname
+      const filePath = url.pathname.slice(1);
       // Use download proxy to avoid CORS
       window.open(`/api/download/${filePath}`, '_blank');
-    } else {
+    } catch {
       // Fallback: open the file URL directly
       window.open(item.fileUrl, '_blank');
     }
