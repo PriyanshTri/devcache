@@ -3,7 +3,6 @@
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { VALID_ITEM_TYPES } from '@/lib/db/items';
-import { getSystemItemTypes } from '@/lib/db/system-items';
 import { MAX_ITEMS, MAX_COLLECTIONS } from '@/lib/usage';
 import { getAuthedSession, type ActionResult } from '@/lib/action-utils';
 
@@ -179,7 +178,9 @@ export async function importData(
   const existingCollectionNames = new Set(existingCollections.map((c) => c.name));
 
   // Fetch system item types
-  const systemTypes = await getSystemItemTypes();
+  const systemTypes = await prisma.itemType.findMany({
+    where: { isSystem: true },
+  });
   const typeMap = new Map(systemTypes.map((t) => [t.name, t.id]));
 
   let itemsImported = 0;
@@ -200,6 +201,8 @@ export async function importData(
       collectionNameToId.set(c.name, c.id);
     }
 
+    const collectionsToCreate = [];
+
     for (let i = 0; i < data.collections.length; i++) {
       const collection = data.collections[i];
 
@@ -213,17 +216,24 @@ export async function importData(
         continue;
       }
 
-      const created = await tx.collection.create({
-        data: {
-          userId,
-          name: collection.name,
-          description: collection.description,
-          isFavorite: collection.isFavorite,
-        },
+      collectionsToCreate.push({
+        userId,
+        name: collection.name,
+        description: collection.description,
+        isFavorite: collection.isFavorite,
       });
 
-      collectionNameToId.set(collection.name, created.id);
       collectionsImported++;
+    }
+
+    if (collectionsToCreate.length > 0) {
+      const createdCollections = await tx.collection.createManyAndReturn({
+        data: collectionsToCreate,
+      });
+
+      for (const created of createdCollections) {
+        collectionNameToId.set(created.name, created.id);
+      }
     }
 
     // 2. Create items with tags and collection assignments

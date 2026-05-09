@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 export async function DELETE() {
   try {
@@ -11,6 +12,12 @@ export async function DELETE() {
         { error: 'Unauthorized' },
         { status: 401 }
       )
+    }
+
+    // Check rate limit
+    const rateLimit = await checkRateLimit('deleteAccount', session.user.id)
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit.retryAfter)
     }
 
     // Delete the user - cascade will handle related data

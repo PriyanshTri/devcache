@@ -169,3 +169,16 @@ export function formatFileSize(bytes: number): string {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
+
+/**
+ * Extract the path/key from an R2 URL
+ */
+export function extractR2Key(fileUrl: string): string | null {
+  try {
+    const url = new URL(fileUrl);
+    // Remove leading slash from pathname
+    return url.pathname.slice(1);
+  } catch {
+    return null;
+  }
+}

@@ -6,7 +6,6 @@ import ProfileInfo from '@/components/profile/profile-info';
 import ProfileStats from '@/components/profile/profile-stats';
 import { getSidebarCollections } from '@/lib/db/collections';
 import { getItemTypesWithCounts } from '@/lib/db/items';
-import { getSystemItemTypes } from '@/lib/db/system-items';
 import { getUserWithSettings } from '@/lib/db/users';
 
 export default async function ProfilePage() {
@@ -30,7 +29,9 @@ export default async function ProfilePage() {
   });
 
   // Get item types to map IDs to names
-  const itemTypes = await getSystemItemTypes();
+  const itemTypes = await prisma.itemType.findMany({
+    where: { isSystem: true },
+  });
 
   const typeCountMap = new Map(itemCounts.map((c) => [c.itemTypeId, c._count.id]));
   const itemTypeBreakdown = itemTypes.map((type) => ({
