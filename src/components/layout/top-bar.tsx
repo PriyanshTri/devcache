@@ -32,6 +32,8 @@ export default function TopBar({ onMenuClick, isPro }: TopBarProps) {
         size="icon"
         className="lg:hidden shrink-0"
         onClick={onMenuClick}
+        aria-label="Open mobile menu"
+        title="Open mobile menu"
       >
         <Menu className="h-5 w-5" />
       </Button>
@@ -62,6 +64,8 @@ export default function TopBar({ onMenuClick, isPro }: TopBarProps) {
         size="icon"
         className="sm:hidden shrink-0"
         onClick={openSearch}
+        aria-label="Open search"
+        title="Open search"
       >
         <Search className="h-5 w-5" />
       </Button>
@@ -86,7 +90,7 @@ export default function TopBar({ onMenuClick, isPro }: TopBarProps) {
         {/* Mobile: + dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button size="icon" className="sm:hidden">
+            <Button size="icon" className="sm:hidden" aria-label="Create new item or collection" title="Create new item or collection">
               <Plus className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
