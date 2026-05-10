@@ -72,7 +72,15 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+  // Make sure publicUrl ends with a slash so that valid urls like https://pub-xxx.r2.dev.attacker.com are rejected
+  const safePrefix = publicUrl ? (publicUrl.endsWith('/') ? publicUrl : `${publicUrl}/`) : null;
+
   for (const item of fileItems) {
+    if (!safePrefix || !item.fileUrl!.startsWith(safePrefix)) {
+      continue;
+    }
+
     try {
       const response = await fetch(item.fileUrl!);
       if (response.ok && response.body) {
