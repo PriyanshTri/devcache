@@ -68,6 +68,8 @@ export default function Sidebar({
           size="icon"
           onClick={onToggle}
           className="h-8 w-8"
+          aria-label={isCollapsed ? "Expand navigation" : "Collapse navigation"}
+          title={isCollapsed ? "Expand navigation" : "Collapse navigation"}
         >
           {isCollapsed ? (
             <PanelLeft className="h-4 w-4" />
