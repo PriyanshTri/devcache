@@ -1,0 +1,3 @@
+## 2024-03-24 - Batching Prisma Queries in Next.js Server Components
+**Learning:** Sequential Prisma queries (e.g., `item.groupBy`, `item.count`, `collection.count`) in Server Components create a waterfall effect that unnecessarily blocks rendering. Furthermore, fetching aggregations like `item.groupBy` and immediately fetching system item types is redundant if a helper function (like `getItemTypesWithCounts`) already returns the exactly needed structured aggregation.
+**Action:** Always batch independent Prisma queries using `Promise.all` in Server Components. Prefer re-using the output of combined queries over running separate `.groupBy` queries when that same structure is needed elsewhere on the page to reduce database roundtrips.
