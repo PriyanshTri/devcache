@@ -72,8 +72,22 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+  if (!publicUrl) {
+    return NextResponse.json(
+      { error: 'Storage not configured' },
+      { status: 500 }
+    );
+  }
+  const safePrefix = publicUrl.endsWith('/') ? publicUrl : `${publicUrl}/`;
+
   for (const item of fileItems) {
     try {
+      // Security: Prevent SSRF by validating against expected prefix
+      if (!item.fileUrl!.startsWith(safePrefix)) {
+        continue;
+      }
+
       const response = await fetch(item.fileUrl!);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
