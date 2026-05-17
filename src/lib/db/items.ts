@@ -151,13 +151,24 @@ export interface DashboardStats {
  * Get dashboard stats for a user
  */
 export async function getDashboardStats(userId: string): Promise<DashboardStats> {
-  const [totalItems, totalCollections, favoriteItems, favoriteCollections] =
-    await Promise.all([
-      prisma.item.count({ where: { userId } }),
-      prisma.collection.count({ where: { userId } }),
-      prisma.item.count({ where: { userId, isFavorite: true } }),
-      prisma.collection.count({ where: { userId, isFavorite: true } }),
-    ]);
+  const [itemsGrouped, collectionsGrouped] = await Promise.all([
+    prisma.item.groupBy({
+      by: ['isFavorite'],
+      where: { userId },
+      _count: true,
+    }),
+    prisma.collection.groupBy({
+      by: ['isFavorite'],
+      where: { userId },
+      _count: true,
+    }),
+  ]);
+
+  const totalItems = itemsGrouped.reduce((acc, group) => acc + (typeof group._count === 'number' ? group._count : (group._count as any)._all ?? 0), 0);
+  const favoriteItems = (itemsGrouped.find(group => group.isFavorite)?._count as any)?._all ?? (typeof itemsGrouped.find(group => group.isFavorite)?._count === 'number' ? itemsGrouped.find(group => group.isFavorite)?._count : 0);
+
+  const totalCollections = collectionsGrouped.reduce((acc, group) => acc + (typeof group._count === 'number' ? group._count : (group._count as any)._all ?? 0), 0);
+  const favoriteCollections = (collectionsGrouped.find(group => group.isFavorite)?._count as any)?._all ?? (typeof collectionsGrouped.find(group => group.isFavorite)?._count === 'number' ? collectionsGrouped.find(group => group.isFavorite)?._count : 0);
 
   return {
     totalItems,
