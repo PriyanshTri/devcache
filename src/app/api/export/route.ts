@@ -67,12 +67,25 @@ export async function GET(request: NextRequest) {
   // Add JSON manifest
   archive.append(JSON.stringify(data, null, 2), { name: 'devcache-export.json' });
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+  if (!publicUrl) {
+    return NextResponse.json(
+      { error: 'Storage not configured' },
+      { status: 500 }
+    );
+  }
+  const safePrefix = publicUrl.endsWith('/') ? publicUrl : publicUrl + '/';
+
   // Fetch and add files from R2 for file/image items
   const fileItems = data.items.filter((item) =>
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
   for (const item of fileItems) {
+    // Security: Prevent SSRF by validating against expected prefix
+    if (!item.fileUrl!.startsWith(safePrefix)) {
+      continue;
+    }
     try {
       const response = await fetch(item.fileUrl!);
       if (response.ok && response.body) {
