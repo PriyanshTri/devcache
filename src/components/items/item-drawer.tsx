@@ -434,6 +434,7 @@ export default function ItemDrawer() {
                 </button>
                 <div className="flex-1" />
                 <button
+                  aria-label="Delete item"
                   onClick={() => setShowDeleteDialog(true)}
                   className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-red-500"
                 >
