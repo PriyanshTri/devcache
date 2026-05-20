@@ -1,0 +1,3 @@
+## 2024-05-20 - Avoid redundant aggregations and prevent query waterfalls
+**Learning:** Found redundant DB operations (`prisma.item.groupBy` and `getSystemItemTypes()`) executing sequentially in `src/app/profile/page.tsx`, causing unnecessary database load, latency, and a waterfall effect. The data was already being fetched in a subsequent `getItemTypesWithCounts(user.id)` call, which handles the exact same aggregation.
+**Action:** Consolidate independent DB queries using `Promise.all` to execute concurrently, and reuse fetched data (like `itemTypesWithCounts`) instead of repeating aggregations.
