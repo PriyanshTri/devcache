@@ -67,6 +67,8 @@ export async function GET(request: NextRequest) {
   // Add JSON manifest
   archive.append(JSON.stringify(data, null, 2), { name: 'devcache-export.json' });
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+
   // Fetch and add files from R2 for file/image items
   const fileItems = data.items.filter((item) =>
     (item.type === 'file' || item.type === 'image') && item.fileUrl
@@ -74,6 +76,10 @@ export async function GET(request: NextRequest) {
 
   for (const item of fileItems) {
     try {
+      // Security: Prevent SSRF by validating against expected prefix
+      if (!publicUrl || !item.fileUrl!.startsWith(publicUrl + '/')) {
+        continue;
+      }
       const response = await fetch(item.fileUrl!);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
