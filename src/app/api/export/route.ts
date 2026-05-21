@@ -72,8 +72,20 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+  const safePrefix = publicUrl ? (publicUrl.endsWith('/') ? publicUrl : `${publicUrl}/`) : null;
+
   for (const item of fileItems) {
     try {
+      if (!safePrefix) {
+        continue;
+      }
+
+      // Security: Prevent SSRF by validating against expected prefix
+      if (!item.fileUrl!.startsWith(safePrefix)) {
+        continue;
+      }
+
       const response = await fetch(item.fileUrl!);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
