@@ -1,0 +1,3 @@
+## $(date +%Y-%m-%d) - Prevent Redundant Data Aggregations in Profile Page
+**Learning:** The profile page was manually re-calculating item counts by executing a redundant `prisma.item.groupBy` query, despite already calling `getItemTypesWithCounts` which returns the exact same data structure needed for the `ProfileStats` component. This caused unnecessary database latency and sequential execution waterfalls.
+**Action:** When working on profile or stats components, reuse aggregate data provided by shared utility functions (`getItemTypesWithCounts`) rather than recalculating the breakdown manually. Additionally, ensure independent queries (e.g., total `.count()` queries and component data fetches) are bundled within a single `Promise.all` to avoid sequential blocking.
