@@ -22,35 +22,39 @@ export default async function ProfilePage() {
     redirect('/sign-in');
   }
 
-  // Get item counts by type
-  const itemCounts = await prisma.item.groupBy({
-    by: ['itemTypeId'],
-    where: { userId: user.id },
-    _count: { id: true },
-  });
+  // Group all independent data fetching calls into a single Promise.all
+  // to avoid sequential execution waterfalls
+  const [
+    itemCounts,
+    itemTypes,
+    totalItems,
+    totalCollections,
+    itemTypesWithCounts,
+    sidebarCollections
+  ] = await Promise.all([
+    prisma.item.groupBy({
+      by: ['itemTypeId'],
+      where: { userId: user.id },
+      _count: { id: true },
+    }),
+    getSystemItemTypes(),
+    prisma.item.count({ where: { userId: user.id } }),
+    prisma.collection.count({ where: { userId: user.id } }),
+    getItemTypesWithCounts(user.id),
+    getSidebarCollections(user.id),
+  ]);
 
-  // Get item types to map IDs to names
-  const itemTypes = await getSystemItemTypes();
+  const typeCountMap = new Map(itemCounts.map((c) => [
+    c.itemTypeId,
+    typeof c._count === 'number' ? c._count : (c._count as any)?.id ?? 0
+  ]));
 
-  const typeCountMap = new Map(itemCounts.map((c) => [c.itemTypeId, c._count.id]));
   const itemTypeBreakdown = itemTypes.map((type) => ({
     name: type.name,
     icon: type.icon,
     color: type.color,
     count: typeCountMap.get(type.id) || 0,
   }));
-
-  // Get totals
-  const [totalItems, totalCollections] = await Promise.all([
-    prisma.item.count({ where: { userId: user.id } }),
-    prisma.collection.count({ where: { userId: user.id } }),
-  ]);
-
-  // Get sidebar data for layout
-  const [itemTypesWithCounts, sidebarCollections] = await Promise.all([
-    getItemTypesWithCounts(user.id),
-    getSidebarCollections(user.id),
-  ]);
 
   return (
     <DashboardLayout
