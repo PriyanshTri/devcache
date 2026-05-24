@@ -41,6 +41,16 @@ export async function GET(request: NextRequest) {
     });
   }
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+
+  // Security: Fail closed if storage is not configured to prevent unvalidated fetches
+  if (format === 'zip' && !publicUrl) {
+    return NextResponse.json(
+      { error: 'Storage not configured' },
+      { status: 500 }
+    );
+  }
+
   // ZIP format: JSON manifest + actual files from R2
   const archive = archiver('zip', { zlib: { level: 9 } });
   const chunks: Uint8Array[] = [];
@@ -72,8 +82,17 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  // Security: Explicitly append a trailing slash to prevent domain extension bypasses
+  const safePrefix = publicUrl ? (publicUrl.endsWith('/') ? publicUrl : `${publicUrl}/`) : '';
+
   for (const item of fileItems) {
     try {
+      // Security: Prevent SSRF by validating against expected prefix
+      if (!item.fileUrl!.startsWith(safePrefix)) {
+        console.warn(`[Security] Blocked attempt to fetch unvalidated URL in export: ${item.fileUrl}`);
+        continue;
+      }
+
       const response = await fetch(item.fileUrl!);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
