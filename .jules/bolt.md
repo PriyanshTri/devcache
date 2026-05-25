@@ -1,0 +1,3 @@
+## 2024-05-25 - Redundant Data Fetching Optimization
+**Learning:** Checking layout-level functions or existing shared components for data before re-querying it sequentially in the page component can prevent redundant database calls. In `src/app/profile/page.tsx`, `getItemTypesWithCounts` was already fetching data that was being manually aggregated using `prisma.item.groupBy` and `getSystemItemTypes()`.
+**Action:** Always verify if required data is already being fetched by layout-level functions, shared components, or other `Promise.all` operations in the same file before adding new Prisma queries for the same data. Use `Promise.all` to batch queries whenever possible.
