@@ -72,9 +72,26 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const r2PublicUrl = process.env.R2_PUBLIC_URL;
+  // Security: Prevent SSRF by ensuring the R2_PUBLIC_URL is configured
+  // If not configured, we fail closed and do not fetch any external files
+  const canFetchFiles = !!r2PublicUrl;
+
   for (const item of fileItems) {
+    if (!canFetchFiles) continue;
+
     try {
-      const response = await fetch(item.fileUrl!);
+      const fileUrl = item.fileUrl!;
+
+      // Security: Prevent SSRF by validating against expected prefix
+      // Ensure the URL starts exactly with our configured R2 bucket URL
+      // We append a trailing slash to prevent domain extension bypasses (e.g. .attacker.com)
+      if (!fileUrl.startsWith(`${r2PublicUrl}/`)) {
+        console.warn('Skipping file fetch: URL does not match R2_PUBLIC_URL prefix');
+        continue;
+      }
+
+      const response = await fetch(fileUrl);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
         const fileName = item.fileName || `file-${fileItems.indexOf(item)}`;
