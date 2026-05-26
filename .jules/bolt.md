@@ -1,0 +1,3 @@
+## 2024-05-26 - Eliminate Redundant Prisma Queries and Sequential Waterfalls
+**Learning:** The profile page was executing redundant Prisma `groupBy` and `count` queries sequentially instead of relying on the existing `getItemTypesWithCounts` which returns both types and counts, and was executing remaining queries with separate `await` calls.
+**Action:** When calculating aggregate data, verify if shared functions like `getItemTypesWithCounts` already return the needed data to avoid redundant database calls. Combine independent Prisma queries into a single `Promise.all` to prevent sequential execution waterfalls and reduce latency.
