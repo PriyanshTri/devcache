@@ -14,3 +14,7 @@
 **Vulnerability:** The Next.js catch-all route at `/api/download/[...path]/route.ts` did not validate path segments. An attacker could pass `..` to traverse directories, which bypasses the simple `filePath.startsWith(userId + '/')` string check, enabling them to fetch other users' files from the backend storage.
 **Learning:** Checking if a concatenated path starts with a string prefix is insufficient because path resolution logic (like URL generation or `fetch()`) will collapse `..` segments, neutralizing the intended prefix check.
 **Prevention:** In Next.js catch-all routes like `[...path]`, always explicitly validate that no path segments contain `..` or `/`, or are exactly `.` before processing or concatenating them.
+## 2024-05-18 - [CRITICAL] Prevent SSRF in ZIP exports
+**Vulnerability:** The ZIP export functionality at `/api/export` fetched arbitrary URLs provided in the `fileUrl` property of export items, potentially leading to Server-Side Request Forgery (SSRF) if the database contained malicious URLs.
+**Learning:** Server-side `fetch` calls based on dynamic data properties, even those originating from the database, must validate the target URL to ensure it points to the intended safe destination (e.g., the configured R2 bucket).
+**Prevention:** Always validate external URLs against a trusted prefix (e.g., `process.env.R2_PUBLIC_URL + '/'`) before making server-side requests. Ensure the check "fails closed" by skipping or rejecting the request if the prefix validation fails.
