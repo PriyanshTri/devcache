@@ -68,6 +68,7 @@ export default function Sidebar({
           size="icon"
           onClick={onToggle}
           className="h-8 w-8"
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isCollapsed ? (
             <PanelLeft className="h-4 w-4" />
@@ -100,6 +101,7 @@ export default function Sidebar({
                   isActive && "bg-accent text-accent-foreground font-medium"
                 )}
                 title={isCollapsed ? type.name : undefined}
+                aria-label={isCollapsed ? `${type.name}s` : undefined}
               >
                 <Icon className="h-4 w-4" style={{ color: type.color }} />
                 {!isCollapsed && (
@@ -221,7 +223,7 @@ export default function Sidebar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             {isCollapsed ? (
-              <button className="flex w-full justify-center">
+              <button className="flex w-full justify-center" aria-label="User menu">
                 <UserAvatar name={user?.name} image={user?.image} />
               </button>
             ) : (
