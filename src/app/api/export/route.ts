@@ -72,8 +72,19 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+
   for (const item of fileItems) {
     try {
+      // Security: Prevent SSRF by validating against expected prefix
+      if (!publicUrl) {
+        throw new Error('Storage not configured');
+      }
+      const safePrefix = publicUrl.endsWith('/') ? publicUrl : `${publicUrl}/`;
+      if (!item.fileUrl!.startsWith(safePrefix)) {
+        throw new Error('Invalid file URL');
+      }
+
       const response = await fetch(item.fileUrl!);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
