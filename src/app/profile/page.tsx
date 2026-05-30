@@ -6,7 +6,6 @@ import ProfileInfo from '@/components/profile/profile-info';
 import ProfileStats from '@/components/profile/profile-stats';
 import { getSidebarCollections } from '@/lib/db/collections';
 import { getItemTypesWithCounts } from '@/lib/db/items';
-import { getSystemItemTypes } from '@/lib/db/system-items';
 import { getUserWithSettings } from '@/lib/db/users';
 
 export default async function ProfilePage() {
@@ -22,24 +21,6 @@ export default async function ProfilePage() {
     redirect('/sign-in');
   }
 
-  // Get item counts by type
-  const itemCounts = await prisma.item.groupBy({
-    by: ['itemTypeId'],
-    where: { userId: user.id },
-    _count: { id: true },
-  });
-
-  // Get item types to map IDs to names
-  const itemTypes = await getSystemItemTypes();
-
-  const typeCountMap = new Map(itemCounts.map((c) => [c.itemTypeId, c._count.id]));
-  const itemTypeBreakdown = itemTypes.map((type) => ({
-    name: type.name,
-    icon: type.icon,
-    color: type.color,
-    count: typeCountMap.get(type.id) || 0,
-  }));
-
   // Get totals
   const [totalItems, totalCollections] = await Promise.all([
     prisma.item.count({ where: { userId: user.id } }),
@@ -51,6 +32,13 @@ export default async function ProfilePage() {
     getItemTypesWithCounts(user.id),
     getSidebarCollections(user.id),
   ]);
+
+  const itemTypeBreakdown = itemTypesWithCounts.map((type) => ({
+    name: type.name,
+    icon: type.icon,
+    color: type.color,
+    count: type.count,
+  }));
 
   return (
     <DashboardLayout
