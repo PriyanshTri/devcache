@@ -35,7 +35,7 @@ export default function SearchProvider({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchData, setSearchData] = useState<SearchData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchSearchData = useCallback(async () => {
     setIsLoading(true);
@@ -51,10 +51,12 @@ export default function SearchProvider({
     }
   }, []);
 
-  // Fetch search data on mount
+  // Fetch search data only when opened for the first time
   useEffect(() => {
-    fetchSearchData();
-  }, [fetchSearchData]);
+    if (isOpen && !searchData) {
+      fetchSearchData();
+    }
+  }, [isOpen, searchData, fetchSearchData]);
 
   // Listen for Cmd+K / Ctrl+K
   useEffect(() => {
