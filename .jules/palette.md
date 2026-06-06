@@ -1,0 +1,3 @@
+## 2024-06-06 - Dynamic Accessible States for Icon-Only Action Buttons
+**Learning:** Icon-only action buttons that represent asynchronous states (like "Copy" becoming "Copied") fail to convey their state transition to screen reader users if their `aria-label` is static. Tooltips (using the `title` attribute or custom components) are also essential to convey state changes to visually sighted users without hiding the icon semantics.
+**Action:** Always dynamically update both `aria-label` and `title` attributes on stateful icon-only buttons (e.g., `aria-label={copied ? "Copied" : "Copy content"}`) to reflect real-time interaction states.
