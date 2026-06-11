@@ -1,0 +1,3 @@
+## 2024-05-18 - Avoid Redundant DB Queries for Identical Data in Profile Page
+**Learning:** Found that `ProfilePage` was duplicating the work of `getItemTypesWithCounts` by re-querying `prisma.item.groupBy` and `getSystemItemTypes` sequentially before calling `getItemTypesWithCounts` again for sidebar data. This meant redundant database queries and missed parallelization.
+**Action:** Always check if required data is already being fetched by layout-level functions or shared components before executing redundant Prisma queries for the same data in the page body. Use `Promise.all` to batch layout and page data requests.
