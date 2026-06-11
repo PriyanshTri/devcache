@@ -68,6 +68,8 @@ export default function Sidebar({
           size="icon"
           onClick={onToggle}
           className="h-8 w-8"
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isCollapsed ? (
             <PanelLeft className="h-4 w-4" />
@@ -131,6 +133,7 @@ export default function Sidebar({
               <button
                 onClick={() => setCollectionsExpanded(!collectionsExpanded)}
                 className="flex w-full items-center gap-2 px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground"
+                aria-label={collectionsExpanded ? "Collapse collections" : "Expand collections"}
               >
                 {collectionsExpanded ? (
                   <ChevronDown className="h-3 w-3" />
@@ -221,11 +224,11 @@ export default function Sidebar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             {isCollapsed ? (
-              <button className="flex w-full justify-center">
+              <button className="flex w-full justify-center" aria-label="User menu">
                 <UserAvatar name={user?.name} image={user?.image} />
               </button>
             ) : (
-              <button className="flex w-full items-center gap-3 rounded-md p-1 hover:bg-accent">
+              <button className="flex w-full items-center gap-3 rounded-md p-1 hover:bg-accent" aria-label="User menu">
                 <UserAvatar name={user?.name} image={user?.image} />
                 <div className="flex-1 overflow-hidden text-left">
                   <p className="truncate text-sm font-medium">
