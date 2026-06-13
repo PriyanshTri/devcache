@@ -66,6 +66,7 @@ export default function Sidebar({
         <Button
           variant="ghost"
           size="icon"
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           onClick={onToggle}
           className="h-8 w-8"
         >
