@@ -1,0 +1,3 @@
+## 2024-06-15 - Eliminate Duplicate Prisma groupBy Queries
+**Learning:** In Next.js App Router applications where layouts are implemented as components wrapping page contents, there's a high risk of fetching identical data twice (e.g., layout sidebar data and page body data). Specifically, `prisma.item.groupBy` was being called twice on the Profile page to calculate item counts.
+**Action:** Always check if the layout-level data fetching (like `getItemTypesWithCounts`) already provides the data needed for the specific page components (like `itemTypeBreakdown`), to eliminate duplicate Prisma queries and redundant processing.
