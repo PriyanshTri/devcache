@@ -72,9 +72,19 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const r2PublicUrl = process.env.R2_PUBLIC_URL;
+  const expectedPrefix = r2PublicUrl ? (r2PublicUrl.endsWith('/') ? r2PublicUrl : `${r2PublicUrl}/`) : null;
+
   for (const item of fileItems) {
     try {
-      const response = await fetch(item.fileUrl!);
+      if (!expectedPrefix || !item.fileUrl) continue;
+
+      // Security: Prevent SSRF by validating against expected prefix
+      // Parsing the URL resolves path traversals (like ..) before checking
+      const parsedUrl = new URL(item.fileUrl);
+      if (!parsedUrl.href.startsWith(expectedPrefix)) continue;
+
+      const response = await fetch(parsedUrl.href);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
         const fileName = item.fileName || `file-${fileItems.indexOf(item)}`;
