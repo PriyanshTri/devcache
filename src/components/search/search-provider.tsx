@@ -6,6 +6,7 @@ import {
   useState,
   useCallback,
   useEffect,
+  useRef,
 } from "react";
 import { getSearchData, type SearchData } from "@/actions/search";
 
@@ -35,7 +36,8 @@ export default function SearchProvider({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchData, setSearchData] = useState<SearchData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const hasFetched = useRef(false);
 
   const fetchSearchData = useCallback(async () => {
     setIsLoading(true);
@@ -51,17 +53,26 @@ export default function SearchProvider({
     }
   }, []);
 
-  // Fetch search data on mount
+  // Performance optimization: Lazy load search data only when the palette is opened
+  // avoiding unnecessary database queries and bundle loading on layout mount.
   useEffect(() => {
-    fetchSearchData();
-  }, [fetchSearchData]);
+    if (isOpen && !hasFetched.current) {
+      hasFetched.current = true;
+      fetchSearchData();
+    }
+  }, [isOpen, fetchSearchData]);
 
   // Listen for Cmd+K / Ctrl+K
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        setIsOpen((prev) => !prev);
+        setIsOpen((prev) => {
+          if (!prev && !hasFetched.current) {
+            setIsLoading(true);
+          }
+          return !prev;
+        });
       }
     };
 
@@ -69,7 +80,12 @@ export default function SearchProvider({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const openSearch = useCallback(() => setIsOpen(true), []);
+  const openSearch = useCallback(() => {
+    setIsOpen(true);
+    if (!hasFetched.current) {
+      setIsLoading(true);
+    }
+  }, []);
   const closeSearch = useCallback(() => setIsOpen(false), []);
 
   return (
