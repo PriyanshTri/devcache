@@ -72,9 +72,21 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+
   for (const item of fileItems) {
     try {
-      const response = await fetch(item.fileUrl!);
+      if (!publicUrl) {
+        throw new Error('Storage not configured');
+      }
+
+      // Security: Prevent SSRF by validating against expected prefix
+      const url = new URL(item.fileUrl!);
+      if (!url.href.startsWith(`${publicUrl}/`)) {
+        throw new Error('Invalid file URL');
+      }
+
+      const response = await fetch(url.href);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
         const fileName = item.fileName || `file-${fileItems.indexOf(item)}`;
