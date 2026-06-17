@@ -1,0 +1,3 @@
+## 2025-02-27 - Remove Duplicate DB Queries on Page Load
+**Learning:** In this project's architecture, major structural layout components run as standard client components in individual `page.tsx` files instead of native `layout.tsx` segments. This means shared layout data (like `itemTypes`) is frequently fetched in the same scope as the page body data. This can easily lead to duplicate Prisma queries if we aren't careful.
+**Action:** Always verify if required data is already being fetched by layout-level functions (like `getItemTypesWithCounts`) in the same file before adding new Prisma `.groupBy` or `.count` queries.
