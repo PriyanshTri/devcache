@@ -1,0 +1,3 @@
+## 2024-06-19 - Redundant layout data queries in Profile page
+**Learning:** In this project's architecture, shared layout data (e.g. `itemTypes` with counts for the sidebar) is fetched inside page components and passed to layout components. The Profile page (`src/app/profile/page.tsx`) was independently re-querying Prisma for the exact same `groupBy` item type breakdowns to display in its `<ProfileStats>`, resulting in an unnecessary duplicate database query that fetched the same data twice.
+**Action:** Always verify if required page data is already being fetched by layout-level functions (like `getItemTypesWithCounts`) before executing redundant Prisma queries in the page body, and reuse the layout data props where applicable to improve backend performance.
