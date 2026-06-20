@@ -32,6 +32,7 @@ export default function TopBar({ onMenuClick, isPro }: TopBarProps) {
         size="icon"
         className="lg:hidden shrink-0"
         onClick={onMenuClick}
+        aria-label="Open mobile menu"
       >
         <Menu className="h-5 w-5" />
       </Button>
@@ -47,6 +48,7 @@ export default function TopBar({ onMenuClick, isPro }: TopBarProps) {
         type="button"
         onClick={openSearch}
         className="relative mx-auto hidden sm:flex max-w-md flex-1 items-center h-9 rounded-md border border-input bg-background px-3 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+        aria-label="Open search"
       >
         <Search className="mr-2 h-4 w-4" />
         <span className="flex-1 text-left">Search items...</span>
@@ -62,6 +64,7 @@ export default function TopBar({ onMenuClick, isPro }: TopBarProps) {
         size="icon"
         className="sm:hidden shrink-0"
         onClick={openSearch}
+        aria-label="Open search"
       >
         <Search className="h-5 w-5" />
       </Button>
@@ -77,7 +80,7 @@ export default function TopBar({ onMenuClick, isPro }: TopBarProps) {
           </Button>
         )}
 
-        <Button variant="ghost" size="icon" asChild>
+        <Button variant="ghost" size="icon" asChild aria-label="View favorites">
           <Link href="/favorites" title="Favorites">
             <Star className="h-5 w-5" />
           </Link>
@@ -86,7 +89,7 @@ export default function TopBar({ onMenuClick, isPro }: TopBarProps) {
         {/* Mobile: + dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button size="icon" className="sm:hidden">
+            <Button size="icon" className="sm:hidden" aria-label="Create new item or collection">
               <Plus className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
