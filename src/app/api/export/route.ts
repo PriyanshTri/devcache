@@ -74,7 +74,18 @@ export async function GET(request: NextRequest) {
 
   for (const item of fileItems) {
     try {
-      const response = await fetch(item.fileUrl!);
+      // Security: Prevent SSRF by validating against expected R2 public URL
+      const publicUrl = process.env.R2_PUBLIC_URL;
+      if (!publicUrl) continue; // Fail closed
+
+      const expectedPrefix = publicUrl.endsWith('/') ? publicUrl : `${publicUrl}/`;
+      const parsedUrl = new URL(item.fileUrl!);
+
+      if (!parsedUrl.href.startsWith(expectedPrefix)) {
+        continue; // Skip invalid URLs
+      }
+
+      const response = await fetch(parsedUrl.href);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
         const fileName = item.fileName || `file-${fileItems.indexOf(item)}`;
