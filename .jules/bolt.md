@@ -1,0 +1,3 @@
+## 2024-06-21 - Remove redundant database queries in Profile Page
+**Learning:** Profile page manually calculated `itemTypeBreakdown` using `prisma.item.groupBy` and `getSystemItemTypes` when `getItemTypesWithCounts` does exactly the same thing and was already being fetched for the layout. This results in unnecessary database calls and duplicates logic. Furthermore, `totalItems` could be derived from `itemTypesWithCounts`.
+**Action:** When a page needs data for both layout and page-specific content, fetch the data once and pass it down. Do not duplicate layout-level database calls inside the page body.
