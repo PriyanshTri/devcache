@@ -72,9 +72,35 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+  let securePrefix = '';
+  if (publicUrl) {
+    try {
+      const expectedUrl = new URL(publicUrl);
+      securePrefix = expectedUrl.href.endsWith('/') ? expectedUrl.href : `${expectedUrl.href}/`;
+    } catch {
+      // Invalid URL config
+    }
+  }
+
   for (const item of fileItems) {
     try {
-      const response = await fetch(item.fileUrl!);
+      // Security: Prevent SSRF by validating against expected R2 prefix
+      if (!securePrefix || !item.fileUrl) continue;
+
+      let targetHref = '';
+      try {
+        targetHref = new URL(item.fileUrl).href;
+      } catch {
+        continue;
+      }
+
+      if (!targetHref.startsWith(securePrefix)) {
+        console.error('SSRF blocked: Unauthorized file URL in export', item.fileUrl);
+        continue;
+      }
+
+      const response = await fetch(targetHref);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
         const fileName = item.fileName || `file-${fileItems.indexOf(item)}`;
