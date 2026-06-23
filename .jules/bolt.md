@@ -1,0 +1,3 @@
+## 2025-02-23 - Batch Data Fetching & Remove Redundant Queries
+**Learning:** Shared layout data (like `itemTypes` and `sidebarCollections`) is often fetched in Next.js page body functions. If page-specific components also require this same data, developers might mistakenly re-query it (e.g., executing duplicate `groupBy` queries for `itemTypeBreakdown`). Additionally, sequential awaits for user verification followed by page data fetching creates unnecessary waterfalls.
+**Action:** Always check if page data is already being fetched for the layout. Group all database operations, including user verification when `userId` is known from the session, into a single `Promise.all` batch to maximize concurrency and remove duplicate queries.
