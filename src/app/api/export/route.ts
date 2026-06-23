@@ -72,8 +72,21 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+  const publicUrlPrefix = publicUrl ? publicUrl + (publicUrl.endsWith('/') ? '' : '/') : null;
+
   for (const item of fileItems) {
     try {
+      // Security: Prevent SSRF by validating against expected prefix
+      if (!publicUrlPrefix) {
+        throw new Error('R2_PUBLIC_URL is not configured');
+      }
+      const parsedUrl = new URL(item.fileUrl!);
+      if (!parsedUrl.href.startsWith(publicUrlPrefix)) {
+        console.warn(`SSRF attempt or invalid URL skipped: ${item.fileUrl}`);
+        continue;
+      }
+
       const response = await fetch(item.fileUrl!);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
