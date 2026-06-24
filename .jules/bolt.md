@@ -1,0 +1,3 @@
+## 2025-01-31 - Eliminate Redundant Query and Waterfall in Profile Page
+**Learning:** Shared layout data like `getItemTypesWithCounts` provides exactly the same aggregate data as isolated queries (e.g. `itemTypeBreakdown`). Failing to reuse this data results in redundant database queries. Moreover, multiple `Promise.all` blocks result in sequential waterfalls when they do not depend on each other.
+**Action:** Always check if required data is already being fetched by layout-level functions or shared components before executing redundant queries for the same data. Group all data fetching operations at the page level into a single `Promise.all` batch whenever possible to maximize concurrency and eliminate sequential waterfalls.
