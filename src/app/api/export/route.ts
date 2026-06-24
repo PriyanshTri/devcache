@@ -72,8 +72,24 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+
   for (const item of fileItems) {
     try {
+      // Security: Prevent SSRF by validating against expected prefix
+      if (!publicUrl) {
+        continue;
+      }
+      let expectedPrefix = new URL(publicUrl).href;
+      if (!expectedPrefix.endsWith('/')) {
+        expectedPrefix += '/';
+      }
+
+      const itemUrl = new URL(item.fileUrl!).href;
+      if (!itemUrl.startsWith(expectedPrefix)) {
+        continue;
+      }
+
       const response = await fetch(item.fileUrl!);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
