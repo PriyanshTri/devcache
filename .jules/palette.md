@@ -1,0 +1,3 @@
+## 2024-06-25 - Dynamic accessibility labels for stateful icon-buttons
+**Learning:** Stateful icon-only action buttons (like a copy button that shows a checkmark upon success) must dynamically update both their `aria-label` and `title` attributes to reflect their current status (e.g., from 'Copy content' to 'Copied'). This provides immediate, accurate feedback for screen reader users and those relying on mouse tooltips, making the micro-interaction fully accessible.
+**Action:** Always bind the `aria-label` and `title` attributes of stateful icon buttons to the same state variable that controls their visual icon rendering to ensure text-based feedback stays perfectly in sync with visual feedback.
