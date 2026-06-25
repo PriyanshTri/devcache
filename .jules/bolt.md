@@ -1,0 +1,3 @@
+## 2024-05-18 - Eliminating Sequential Waterfalls & Redundant Queries in Page Components
+**Learning:** Due to Next.js App Router's server components, it's easy to accidentally create sequential waterfalls when fetching user data followed by other data. Furthermore, shared layout data (like `itemTypesWithCounts`) can sometimes completely replace custom page-specific data aggregation queries, eliminating redundant database calls.
+**Action:** Always inspect page-level data fetching to group queries into a single `Promise.all` using `session.user.id`, and identify if layout props can be reused for page content instead of running redundant DB queries.
