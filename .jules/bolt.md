@@ -1,0 +1,3 @@
+## 2024-06-26 - Eliminate Redundant Prisma Queries in Shared Page Components
+**Learning:** Layout-level data functions like `getItemTypesWithCounts` already compute aggregate counts and type mappings that page components often duplicate (e.g., `ProfilePage` executing duplicate `groupBy` and `getSystemItemTypes` queries).
+**Action:** Always check if layout data fetches already contain the required data. Extract totals and breakdowns directly from the result of the layout data (e.g. reducing counts from `getItemTypesWithCounts`) and bundle the remaining distinct queries into a single `Promise.all` to eliminate redundant database hits.
