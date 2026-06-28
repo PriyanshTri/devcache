@@ -72,9 +72,28 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  let trustedPrefix = '';
+  if (process.env.R2_PUBLIC_URL) {
+    try {
+      const parsedPrefix = new URL(process.env.R2_PUBLIC_URL);
+      trustedPrefix = parsedPrefix.href.endsWith('/')
+        ? parsedPrefix.href
+        : `${parsedPrefix.href}/`;
+    } catch {
+      // Invalid public URL configured
+    }
+  }
+
   for (const item of fileItems) {
     try {
-      const response = await fetch(item.fileUrl!);
+      if (!trustedPrefix) throw new Error('Storage not configured');
+
+      const parsedFileUrl = new URL(item.fileUrl!);
+      if (!parsedFileUrl.href.startsWith(trustedPrefix)) {
+        throw new Error('Invalid file URL'); // Prevent SSRF
+      }
+
+      const response = await fetch(parsedFileUrl.href);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
         const fileName = item.fileName || `file-${fileItems.indexOf(item)}`;
