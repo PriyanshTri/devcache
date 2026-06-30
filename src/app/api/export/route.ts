@@ -72,9 +72,19 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+  const expectedPrefix = publicUrl
+    ? (publicUrl.endsWith('/') ? publicUrl : `${publicUrl}/`)
+    : null;
+
   for (const item of fileItems) {
     try {
-      const response = await fetch(item.fileUrl!);
+      if (!expectedPrefix) continue;
+
+      const parsedUrl = new URL(item.fileUrl!);
+      if (!parsedUrl.href.startsWith(expectedPrefix)) continue;
+
+      const response = await fetch(parsedUrl.href);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
         const fileName = item.fileName || `file-${fileItems.indexOf(item)}`;
