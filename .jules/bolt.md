@@ -1,0 +1,3 @@
+## 2025-03-02 - Eliminate Sequential User Fetch Waterfalls
+**Learning:** Checking for the user object in the database prior to executing page-specific data fetching creates an unnecessary sequential waterfall. Because NextAuth already provides the authenticated `session.user.id`, we can execute all database queries concurrently using this ID instead of waiting for the user fetch to resolve first.
+**Action:** Group user-fetch queries with the rest of the page data fetch queries inside a single `Promise.all` batch using `session.user.id` to maximize database concurrency and reduce Time to First Byte (TTFB).
