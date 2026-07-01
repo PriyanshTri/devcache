@@ -1,0 +1,3 @@
+## 2024-07-01 - Eliminate Sequential Fetching Waterfalls on Pages
+**Learning:** In this project, major layout components are client components, so shared layout data (like `itemTypes`, `sidebarCollections`) and the `user` object itself are fetched within each individual `page.tsx`. This commonly creates sequential waterfalls where `user` is fetched first (to check existence or get `user.id` when `session.user.id` is already available from auth), blocking the layout data fetches.
+**Action:** When creating or modifying pages, group all data fetching operations (including the `user` query) into a single `Promise.all` batch using `session.user.id` to maximize concurrency and eliminate sequential waterfalls. Redirect if `!user` after the batch completes.

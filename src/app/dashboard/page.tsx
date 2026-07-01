@@ -18,22 +18,23 @@ export default async function DashboardPage() {
     redirect('/sign-in');
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { id: true, name: true, email: true, image: true },
-  });
+  const [user, collections, pinnedItems, recentItems, stats, itemTypes, sidebarCollections, editorPreferences] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { id: true, name: true, email: true, image: true },
+    }),
+    getRecentCollections(session.user.id, DASHBOARD_COLLECTIONS_LIMIT),
+    getPinnedItems(session.user.id),
+    getRecentItems(session.user.id, DASHBOARD_RECENT_ITEMS_LIMIT),
+    getDashboardStats(session.user.id),
+    getItemTypesWithCounts(session.user.id),
+    getSidebarCollections(session.user.id),
+    getEditorPreferences(session.user.id),
+  ]);
 
-  const [collections, pinnedItems, recentItems, stats, itemTypes, sidebarCollections, editorPreferences] = user
-    ? await Promise.all([
-        getRecentCollections(user.id, DASHBOARD_COLLECTIONS_LIMIT),
-        getPinnedItems(user.id),
-        getRecentItems(user.id, DASHBOARD_RECENT_ITEMS_LIMIT),
-        getDashboardStats(user.id),
-        getItemTypesWithCounts(user.id),
-        getSidebarCollections(user.id),
-        getEditorPreferences(user.id),
-      ])
-    : [[], [], [], { totalItems: 0, totalCollections: 0, favoriteItems: 0, favoriteCollections: 0 }, [], { favorites: [], recents: [] }, undefined];
+  if (!user) {
+    redirect('/sign-in');
+  }
 
   return (
     <DashboardLayout
