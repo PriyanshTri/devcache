@@ -72,16 +72,28 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+
   for (const item of fileItems) {
     try {
-      const response = await fetch(item.fileUrl!);
+      // Security: Prevent SSRF by validating URL against expected prefix
+      if (!publicUrl) continue; // Fail closed if missing config
+
+      const parsedUrl = new URL(item.fileUrl!);
+      const expectedPrefix = publicUrl.endsWith('/') ? publicUrl : `${publicUrl}/`;
+
+      if (!parsedUrl.href.startsWith(expectedPrefix)) {
+        continue; // Skip invalid or malicious URLs
+      }
+
+      const response = await fetch(parsedUrl.href);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
         const fileName = item.fileName || `file-${fileItems.indexOf(item)}`;
         archive.append(Buffer.from(arrayBuffer), { name: `files/${fileName}` });
       }
     } catch {
-      // Skip files that can't be fetched
+      // Skip files that can't be fetched or have invalid URLs
     }
   }
 
