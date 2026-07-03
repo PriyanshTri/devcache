@@ -72,16 +72,24 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const publicUrlStr = process.env.R2_PUBLIC_URL;
+  // Ensure the expected prefix ends with a slash to prevent domain bypasses
+  const expectedPrefix = publicUrlStr ? (publicUrlStr.endsWith('/') ? publicUrlStr : `${publicUrlStr}/`) : null;
+
   for (const item of fileItems) {
     try {
-      const response = await fetch(item.fileUrl!);
+      if (!expectedPrefix) continue;
+      const parsedUrl = new URL(item.fileUrl!);
+      if (!parsedUrl.href.startsWith(expectedPrefix)) continue;
+
+      const response = await fetch(parsedUrl.href);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
         const fileName = item.fileName || `file-${fileItems.indexOf(item)}`;
         archive.append(Buffer.from(arrayBuffer), { name: `files/${fileName}` });
       }
     } catch {
-      // Skip files that can't be fetched
+      // Skip files that can't be fetched or have invalid URLs
     }
   }
 
