@@ -64,6 +64,15 @@ export async function GET(request: NextRequest) {
     archive.on('error', reject);
   });
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+  if (format === 'zip' && !publicUrl) {
+    return NextResponse.json(
+      { error: 'Storage not configured' },
+      { status: 500 }
+    );
+  }
+  const expectedPrefix = publicUrl?.endsWith('/') ? publicUrl : `${publicUrl}/`;
+
   // Add JSON manifest
   archive.append(JSON.stringify(data, null, 2), { name: 'devcache-export.json' });
 
@@ -74,7 +83,11 @@ export async function GET(request: NextRequest) {
 
   for (const item of fileItems) {
     try {
-      const response = await fetch(item.fileUrl!);
+      const parsedUrl = new URL(item.fileUrl!);
+      if (!parsedUrl.href.startsWith(expectedPrefix)) {
+        continue;
+      }
+      const response = await fetch(parsedUrl.href);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
         const fileName = item.fileName || `file-${fileItems.indexOf(item)}`;
