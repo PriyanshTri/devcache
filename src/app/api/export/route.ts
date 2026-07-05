@@ -42,6 +42,15 @@ export async function GET(request: NextRequest) {
   }
 
   // ZIP format: JSON manifest + actual files from R2
+  const publicUrl = process.env.R2_PUBLIC_URL;
+  if (!publicUrl) {
+    return NextResponse.json(
+      { error: 'Storage not configured' },
+      { status: 500 }
+    );
+  }
+  const allowedPrefix = publicUrl.endsWith('/') ? publicUrl : `${publicUrl}/`;
+
   const archive = archiver('zip', { zlib: { level: 9 } });
   const chunks: Uint8Array[] = [];
 
@@ -74,14 +83,20 @@ export async function GET(request: NextRequest) {
 
   for (const item of fileItems) {
     try {
-      const response = await fetch(item.fileUrl!);
+      // Prevent SSRF by validating the URL against the expected R2 public URL
+      const url = new URL(item.fileUrl!);
+      if (!url.href.startsWith(allowedPrefix)) {
+        continue; // Skip unauthorized URLs
+      }
+
+      const response = await fetch(url.href);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
         const fileName = item.fileName || `file-${fileItems.indexOf(item)}`;
         archive.append(Buffer.from(arrayBuffer), { name: `files/${fileName}` });
       }
     } catch {
-      // Skip files that can't be fetched
+      // Skip files that can't be fetched or have invalid URLs
     }
   }
 
