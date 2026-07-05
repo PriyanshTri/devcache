@@ -1,0 +1,3 @@
+## $(date +%Y-%m-%d) - Prevent duplicate queries for shared layout data
+**Learning:** Shared layout data functions (like `getItemTypesWithCounts`) already fetch and aggregate exactly the data needed by individual page components. Running duplicate queries in the page body causes unnecessary database load. Additionally, performing sequential requests rather than grouping them via `Promise.all()` leads to request waterfalls.
+**Action:** Always check if required data is already being fetched by layout-level functions or shared components. Aggressively reuse fetched data arrays for multiple component props. Group all data fetching operations at the page level into a single `Promise.all` batch whenever possible.
