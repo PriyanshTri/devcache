@@ -1,0 +1,3 @@
+## 2024-05-18 - Icon-only Structural Buttons Accessibility
+**Learning:** The DevCache codebase relies heavily on icon-only buttons and links within its structural layout components (top bar, sidebar). Critical navigation paths (like the mobile menu or search toggle) were masking their functions from screen readers because they lacked explicit `aria-label` attributes.
+**Action:** Always thoroughly inspect structural components (top bar, sidebar, mobile navigation) during accessibility reviews to ensure appropriate `aria-label`s are applied, especially for responsive/mobile variants. For stateful structural toggles (like sidebar collapse/expand), ensure both `aria-label` and `title` dynamically reflect the current state.
