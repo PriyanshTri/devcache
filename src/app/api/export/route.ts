@@ -72,9 +72,27 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const publicUrl = process.env.R2_PUBLIC_URL;
+  let safePrefix: string | null = null;
+  if (publicUrl) {
+    try {
+      const expectedUrl = new URL(publicUrl);
+      safePrefix = expectedUrl.href.endsWith('/') ? expectedUrl.href : `${expectedUrl.href}/`;
+    } catch {
+      // invalid URL in env
+    }
+  }
+
   for (const item of fileItems) {
     try {
-      const response = await fetch(item.fileUrl!);
+      // SSRF Prevention: Fail closed if misconfigured, validate URL
+      if (!safePrefix) continue;
+      const targetUrl = new URL(item.fileUrl!);
+      if (!targetUrl.href.startsWith(safePrefix)) {
+        continue;
+      }
+
+      const response = await fetch(targetUrl.href);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
         const fileName = item.fileName || `file-${fileItems.indexOf(item)}`;
