@@ -72,9 +72,26 @@ export async function GET(request: NextRequest) {
     (item.type === 'file' || item.type === 'image') && item.fileUrl
   );
 
+  const r2PublicUrl = process.env.R2_PUBLIC_URL;
+
   for (const item of fileItems) {
     try {
-      const response = await fetch(item.fileUrl!);
+      if (!r2PublicUrl) {
+        throw new Error('R2_PUBLIC_URL is not configured');
+      }
+
+      const url = new URL(item.fileUrl!);
+      const r2Url = new URL(r2PublicUrl);
+
+      // SSRF Prevention: Validate that the URL matches our R2 public domain
+      // Ensure we add a trailing slash to avoid bypasses like .attacker.com
+      const r2Prefix = r2Url.href.endsWith('/') ? r2Url.href : r2Url.href + '/';
+      if (!url.href.startsWith(r2Prefix)) {
+         console.error('SSRF attempt blocked:', url.href);
+         continue;
+      }
+
+      const response = await fetch(url.href);
       if (response.ok && response.body) {
         const arrayBuffer = await response.arrayBuffer();
         const fileName = item.fileName || `file-${fileItems.indexOf(item)}`;
