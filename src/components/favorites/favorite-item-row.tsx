@@ -10,9 +10,11 @@ interface FavoriteItemRowProps {
   item: ItemWithType;
 }
 
+function DynamicIcon({ icon: Icon, className, style }: { icon: React.ElementType, className?: string, style?: React.CSSProperties }) { return <Icon className={className} style={style} />; }
+
 export default function FavoriteItemRow({ item }: FavoriteItemRowProps) {
   const { openDrawer } = useItemDrawer();
-  const IconComponent = getItemTypeIcon(item.itemType.icon);
+  const icon = getItemTypeIcon(item.itemType.icon);
   const iconColor = item.itemType.color;
 
   return (
@@ -21,10 +23,7 @@ export default function FavoriteItemRow({ item }: FavoriteItemRowProps) {
       onClick={() => openDrawer(item.id)}
       className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-muted/50 transition-colors rounded-sm group"
     >
-      <IconComponent
-        className="h-4 w-4 shrink-0"
-        style={{ color: iconColor }}
-      />
+      <DynamicIcon icon={icon} className="h-4 w-4 shrink-0" style={{ color: iconColor }} />
       <span className="flex-1 min-w-0 font-mono text-sm text-foreground truncate">
         {item.title}
       </span>
